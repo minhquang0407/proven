@@ -257,6 +257,10 @@ class ImpactEngine:
             for rel, caller in self.in_edges.get(func, []):
                 if rel == 'calls' and caller not in frontier_symbols:
                     self._add_score(scores, target_key, caller, 0.85, 'Direct', 'direct caller', f"{self.full_id_by_key.get(caller, caller)} -> calls -> {func_label}")
+            for rel, callee in self.out_edges.get(func, []):
+                if rel in {'calls', 'uses', 'instantiates'} and callee not in frontier_symbols:
+                    weight = {'calls': 0.70, 'uses': 0.65, 'instantiates': 0.75}.get(rel, 0.60)
+                    self._add_score(scores, target_key, callee, weight, 'Direct', f'direct {rel}', f"{func_label} -> {rel} -> {self.full_id_by_key.get(callee, callee)}")
 
         commits_touching_target = set()
         for file_key in target_files:

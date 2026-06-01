@@ -1632,6 +1632,15 @@ def simple_generate(project, repo_path, base, head, target, source_file, only_fi
         if not feedback:
             console.print("[green]No failed targets remain; replan loop complete.[/green]")
             break
+        from softgnn_advisor.core.failure_classifier import replanable_failures
+        source_by_target = {plan.target_id: plan.source_file for plan in getattr(result, 'plans', [])}
+        allowed, blocked = replanable_failures(getattr(result, 'verification_results', []), source_by_target)
+        for target_id, category, reason in blocked:
+            console.print(f"[yellow]Skipping replan for {target_id}: {category} — {reason}[/yellow]")
+        feedback = {target_id: item for target_id, item in feedback.items() if target_id in allowed}
+        if not feedback:
+            console.print("[yellow]Replan skipped: remaining failures look like environment/source/runtime issues, not generated-test quality issues.[/yellow]")
+            break
         agent.print_stage('REPLAN', f'Planning {len(feedback)} failed target(s), iteration {iteration}/{replan_iters}, using same scan')
         retry_results = []
         for target_id, item in feedback.items():
