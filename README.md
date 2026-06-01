@@ -406,10 +406,11 @@ This is a developer preview. Generated tests should be reviewed before commit. P
 ```text
 M4  Runtime-Proven Test Generation         ✅ complete
 M5  Smart Scan + Dashboard + File Generate ✅ complete
-M6  Learned Test Prioritization / GNN Ranking
-M7  Multi-Agent Quality Swarm
-M8  Large-scale repo automation
-M9  Controlled production-code fixes
+M6  MCP Server + GNN Risk Scoring
+M7  Multi-Language Graph Intelligence
+M8  Multi-Agent Quality Swarm
+M9  Large-scale repo automation
+M10 Controlled production-code fixes
 ```
 
 Read more:

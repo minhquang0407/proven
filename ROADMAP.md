@@ -124,7 +124,53 @@ agent uses risk scores to prioritize generation targets
 
 ---
 
-## M7 — Multi-Agent Quality Swarm
+## M7 — Multi-Language Graph Intelligence
+
+Goal:
+
+```text
+expand SoftGNN beyond Python so the graph + runtime-proof workflow works
+across TypeScript/JavaScript, Go, Java, and other common repo ecosystems
+```
+
+Planned language architecture:
+
+```text
+LanguageAdapter interface
+  → parse symbols
+  → extract call/import/definition edges
+  → discover test files
+  → run language-native test commands
+  → map runtime coverage back to graph nodes
+
+PythonAdapter      → current AST + pytest + coverage.py pipeline
+TypeScriptAdapter  → ts-morph/tree-sitter + vitest/jest + c8/istanbul
+JavaScriptAdapter  → tree-sitter/babel + jest/vitest + c8/istanbul
+GoAdapter          → go list/go test -coverprofile
+JavaAdapter        → javaparser + Maven/Gradle + JaCoCo
+```
+
+MCP impact:
+
+```text
+agents can ask the same SoftGNN MCP tools across languages:
+softgnn.scan_impact()
+softgnn.get_missing_coverage()
+softgnn.get_impact(target)
+softgnn.verify_tests()
+
+SoftGNN decides language-specific parsing/testing internally.
+```
+
+Principle:
+
+```text
+SoftGNN should become a repo intelligence layer, not a Python-only tool.
+```
+
+---
+
+## M8 — Multi-Agent Quality Swarm
 
 Goal:
 
@@ -140,6 +186,7 @@ WriterAgent     → generates test code
 ReviewerAgent   → critiques test quality and coverage
 RepairAgent     → fixes failing tests
 CoverageAgent   → confirms runtime proof via SoftGNN MCP
+LanguageAgent   → handles language-specific test idioms and frameworks
 Deterministic QualityGate
 ```
 
