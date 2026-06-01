@@ -1565,12 +1565,13 @@ def simple_generate(project, repo_path, base, head, target, source_file, only_fi
         missing_table = Table(title="Missing Coverage Targets")
         missing_table.add_column("#", justify="right", style="cyan", width=4)
         missing_table.add_column("Target", style="yellow")
-        missing_table.add_column("File", style="white")
+        missing_table.add_column("Reason", style="white")
         for idx, mc in enumerate(scan_result.missing_coverage[:8], start=1):
-            missing_table.add_row(str(idx), mc.target_id, mc.source_file)
+            missing_table.add_row(str(idx), mc.target_id, getattr(mc, 'reason', ''))
         if len(scan_result.missing_coverage) > 8:
             missing_table.add_row("...", f"... and {len(scan_result.missing_coverage) - 8} more", "")
         console.print(missing_table)
+
 
     console.print(f"[bold green]Scan saved:[/bold green] {scan_path}")
     console.print(f"[bold green]Latest scan:[/bold green] {latest_scan_path}")
