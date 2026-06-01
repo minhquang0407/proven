@@ -4,10 +4,11 @@
 
 ### Graph-guided, runtime-proven, LLM-assisted PR testing
 
-**Know what changed. Know what tests hit it. Generate what is missing.**
+**Know what changed. Know what tests hit it. Generate what is missing. Visualize your codebase.**
 
 [![Tests](https://github.com/minhquang0407/softgnn-advisor/actions/workflows/tests.yml/badge.svg)](https://github.com/minhquang0407/softgnn-advisor/actions/workflows/tests.yml)
 [![Release](https://img.shields.io/github/v/tag/minhquang0407/softgnn-advisor?label=release)](https://github.com/minhquang0407/softgnn-advisor/releases)
+[![PyPI](https://img.shields.io/pypi/v/softgnn-advisor)](https://pypi.org/project/softgnn-advisor/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![LLM](https://img.shields.io/badge/LLM-Gemini%20%7C%20OpenAI--compatible-8A2BE2)](#configure-an-llm-provider)
@@ -43,45 +44,6 @@ Then run:
 ```bash
 softgnn setup /path/to/your-repo --project my-app
 softgnn generate --project my-app
-```
-
-Or run each stage explicitly:
-
-```bash
-softgnn scan --project my-app
-softgnn plan --project my-app
-softgnn apply --project my-app
-```
-
-Stage meaning:
-
-```text
-scan  = inspect repo changes and save a reusable scan snapshot
-plan  = create a test plan from the saved scan, auto-scanning if none exists
-apply = write generated test blocks, run pytest, repair, rollback, and refresh runtime map
-```
-
-`softgnn generate` is the convenience workflow:
-
-```text
-scan -> plan -> apply
-```
-
-If apply fails and replan is enabled, retry planning reuses the same scan:
-
-```text
-plan -> apply
-```
-
-For local development from source:
-
-```bash
-git clone https://github.com/minhquang0407/softgnn-advisor.git
-cd softgnn-advisor
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-pip install -e ".[all]"
-softgnn --help
 ```
 
 ---
@@ -137,6 +99,9 @@ flowchart LR
 | Rolls back failed generated tests | ❌ | ✅ |
 | Maps tests to functions at runtime | ❌ | ✅ |
 | Confirms PR coverage after generation | ❌ | ✅ |
+| Smart scan fallback (empty diff) | ❌ | ✅ |
+| Interactive graph dashboard | ❌ | ✅ |
+| File-scoped test generation | ❌ | ✅ |
 | Supports Gemini/OpenAI-compatible LLMs | varies | ✅ |
 
 ---
@@ -155,6 +120,227 @@ flowchart LR
 - **Pytest verification** and bounded generated-test repair loop.
 - **Runtime refresh** after successful generation.
 - **PR scan confirmation** after runtime refresh.
+- **Smart scan fallback** — auto-detects empty diffs and falls back to recent pull, filesystem, or full-scan.
+- **Interactive local graph dashboard** — visualize your codebase graph and run commands from a browser UI.
+- **File-scoped generation** — generate tests only for a specific source file.
+- **Graph refresh** — rebuild graph and snapshot after `git pull`.
+
+---
+
+## Quickstart
+
+```bash
+softgnn setup /path/to/your-repo --project my-app
+softgnn generate --project my-app
+```
+
+Or stage by stage:
+
+```bash
+softgnn scan --project my-app
+softgnn plan --project my-app
+softgnn apply --project my-app
+```
+
+Stage meaning:
+
+```text
+scan  = inspect repo changes and save a reusable scan snapshot
+plan  = create a test plan from the saved scan, auto-scanning if none exists
+apply = write generated test blocks, run pytest, repair, rollback, and refresh runtime map
+```
+
+`generate` is the convenience shortcut for `scan -> plan -> apply`.
+
+---
+
+## Smart scan fallback
+
+SoftGNN automatically handles common zero-diff situations. After `git pull` the local branch and HEAD are the same commit, so the default `main...HEAD` diff is empty. The smart fallback tries:
+
+```text
+1. recent reflog range (HEAD@{1}...HEAD)
+2. filesystem snapshot diff
+3. optional full-scan (--fallback-full-scan)
+```
+
+This works transparently for `scan` and `pr-scan`:
+
+```bash
+softgnn scan --project my-app
+softgnn pr-scan --project my-app
+```
+
+For `generate` (which writes files), SoftGNN uses a **safe interactive fallback** instead:
+
+- If the worktree is dirty → warns you to commit first or use `--source filesystem`.
+- If committed directly on main with empty diff → asks before using `HEAD~1...HEAD`.
+
+```bash
+softgnn generate --project my-app --yes   # accept the safe prompt automatically
+```
+
+---
+
+## Refresh after git pull
+
+After pulling shared changes, rebuild the SoftGNN graph and filesystem snapshot:
+
+```bash
+softgnn refresh --project my-app
+```
+
+Options:
+
+```bash
+softgnn refresh --project my-app --runtime   # also refresh pytest runtime coverage
+softgnn refresh --project my-app --train     # also retrain GNN weights
+```
+
+---
+
+## Interactive graph dashboard
+
+Start the local dashboard (bound to localhost for safety):
+
+```bash
+softgnn dashboard --project my-app --open
+```
+
+Opens at `http://127.0.0.1:8765`.
+
+The dashboard lets you:
+
+- Visualize the knowledge graph with Cytoscape.js
+- Search and filter nodes by type or name
+- Focus the graph on a source file or specific node
+- See selected node details and coverage status
+- Run actions from the browser:
+
+| Button | Action |
+|---|---|
+| Refresh Graph View | Reload graph data |
+| Run Scan | `softgnn scan` |
+| Run PR Scan | `softgnn pr-scan` |
+| Run Impact for Selected | `softgnn impact` for the selected node |
+| Refresh SoftGNN Memory | `softgnn refresh` |
+| Map Runtime Coverage | `softgnn map` |
+| Generate Selected File | `softgnn generate --only-file <selected>` |
+| Generate Selected Node | `softgnn generate --target <selected>` |
+
+Write actions show a confirmation modal. After generate or map completes, the graph reloads automatically — new test nodes and runtime edges will appear.
+
+Options:
+
+```bash
+softgnn dashboard --project my-app --port 8777 --open
+```
+
+---
+
+## File-scoped generation
+
+Generate tests only for targets in a specific source file:
+
+```bash
+softgnn generate --project my-app --only-file src/foo.py
+softgnn generate --project my-app --only-file src/foo.py --source filesystem
+softgnn plan --project my-app --only-file src/foo.py
+```
+
+If no matching targets are found in that file for the current scan, SoftGNN prints a clear hint.
+
+---
+
+## Configure an LLM provider
+
+### Gemini
+
+```bash
+export SOFTGNN_LLM_PROVIDER=gemini
+export SOFTGNN_LLM_MODEL=gemini-2.5-flash
+export SOFTGNN_LLM_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+PowerShell:
+
+```powershell
+$env:SOFTGNN_LLM_PROVIDER="gemini"
+$env:SOFTGNN_LLM_MODEL="gemini-2.5-flash"
+$env:SOFTGNN_LLM_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+### OpenAI-compatible endpoint
+
+```bash
+export SOFTGNN_LLM_PROVIDER=openai-compatible
+export SOFTGNN_LLM_BASE_URL=http://localhost:11434/v1
+export SOFTGNN_LLM_MODEL=qwen2.5-coder:7b
+```
+
+Generation strategies:
+
+```text
+template  -> deterministic templates only, no LLM required
+llm       -> require configured LLM
+auto      -> try LLM first, fallback to templates when unavailable
+```
+
+---
+
+## Daily commands
+
+| Goal | Command |
+|---|---|
+| Build graph and snapshot | `softgnn setup /repo --project my-app` |
+| Rebuild graph after git pull | `softgnn refresh --project my-app` |
+| Open interactive dashboard | `softgnn dashboard --project my-app --open` |
+| One-shot plan + apply + verify | `softgnn generate --project my-app` |
+| Generate for specific file | `softgnn generate --project my-app --only-file src/foo.py` |
+| Generate for specific function | `softgnn generate --project my-app --target FUNC:foo` |
+| Accept safe same-branch fallback | `softgnn generate --project my-app --yes` |
+| Review before patching | `softgnn plan --project my-app` |
+| Apply reviewed plan | `softgnn apply --project my-app` |
+| Inspect change impact | `softgnn scan --project my-app` |
+| Scan PR with report | `softgnn pr-scan --project my-app --report --open-report` |
+| Runtime test map | `softgnn map --project my-app` |
+| Impact of one symbol | `softgnn impact --project my-app FUNC:foo` |
+| Health check | `softgnn doctor --project my-app` |
+| Developer triage | `softgnn triage --project my-app "bug description"` |
+
+---
+
+## Safety model
+
+SoftGNN is conservative by default:
+
+```text
+writes tests/ only
+wraps generated code in markers
+validates LLM output before patching
+runs pytest before accepting generated tests
+rolls back failed generated edits by default
+dashboard server binds to localhost only
+dashboard actions are allowlisted — no arbitrary shell execution
+never requires committing API keys
+```
+
+Generated test blocks are marked:
+
+```python
+# <softgnn-generated target="FUNC:example" start>
+...
+# <softgnn-generated target="FUNC:example" end>
+```
+
+Recommended workflow:
+
+```text
+run on a feature branch
+use plan first to review proposed tests
+use generate after review
+inspect git diff before commit
+```
 
 ---
 
@@ -189,217 +375,25 @@ Read the full demo: [docs/examples/social-link-demo.md](docs/examples/social-lin
 
 ---
 
-## Install
+## Development install
 
 ```bash
 git clone https://github.com/minhquang0407/softgnn-advisor.git
 cd softgnn-advisor
 python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+.venv\Scripts\activate      # Windows
+pip install -e ".[all]"
+softgnn --help
 ```
 
-Windows PowerShell:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Linux/macOS:
-
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-> PyTorch / PyTorch Geometric installs can be platform-specific. If installation fails, follow the official PyTorch and PyG installation guides for your environment.
-
----
-
-## Configure an LLM provider
-
-### Gemini
-
-```powershell
-$env:SOFTGNN_LLM_PROVIDER="gemini"
-$env:SOFTGNN_LLM_MODEL="gemini-3-flash"
-$env:SOFTGNN_LLM_API_KEY="YOUR_GEMINI_API_KEY"
-```
-
-If your API account uses another model ID:
-
-```powershell
-$env:SOFTGNN_LLM_MODEL="gemini-2.5-flash"
-```
-
-### OpenAI-compatible endpoint
-
-```powershell
-$env:SOFTGNN_LLM_PROVIDER="openai-compatible"
-$env:SOFTGNN_LLM_BASE_URL="http://localhost:11434/v1"
-$env:SOFTGNN_LLM_MODEL="qwen2.5-coder:7b"
-$env:SOFTGNN_LLM_API_KEY="optional-if-your-endpoint-needs-it"
-```
-
-Generation strategies:
-
-```text
-template  -> deterministic templates only
-llm       -> require configured LLM unless fallback is allowed
-auto      -> try LLM first, fallback to templates when unavailable
-```
-
----
-
-## Quickstart
-
-After setup, use `generate` for the full beginner workflow:
-
-```powershell
-softgnn setup C:\repo\my-app --project my-app
-softgnn generate --project my-app
-```
-
-`generate` is the one-shot command:
-
-```text
-plan -> save latest_plan.json -> apply saved plan
-```
-
-During `apply`, SoftGNN:
-
-```text
-writes generated tests under tests/
-runs pytest with streaming output
-repairs failing generated tests
-keeps passing generated tests
-rolls back failing generated tests
-refreshes runtime coverage for kept tests
-saves apply feedback to ~/.softgnn/<project>/apply_runs/<run_id>/result.json
-```
-
-By default, `generate` also replans failed/rolled-back targets once:
-
-```text
-plan -> apply -> replan failed targets with apply feedback -> apply retry plan
-```
-
-To disable the extra replanning pass and save LLM tokens:
-
-```powershell
-softgnn generate --project my-app --replan-iters 0
-```
-
-Want to review proposed tests before patching? Use `plan` then `apply`:
-
-```powershell
-softgnn setup C:\repo\my-app --project my-app
-softgnn plan --project my-app    # generate + save a reusable plan, no writes
-softgnn apply --project my-app   # load saved plan, write tests, verify, rollback/map
-```
-
-`apply` is intentionally pure: it does **not** generate fresh tests when no saved plan exists. If there is no saved plan, run `plan` first or use `generate`.
-
-Template-only generation, without an LLM:
-
-```powershell
-softgnn generate --project my-app --no-llm
-```
-
-Advanced commands are still available (`prepare`, `pr-scan`, `generate-tests`, `test-map`).
-
-Mental model:
-
-```text
-setup/prepare need the repo path once
-plan decides what to write
-apply executes an existing plan and owns rollback
-generate runs plan + apply, with one default replan attempt
-```
-
-Daily commands after setup:
-
-| Goal | Command |
-|---|---|
-| One-shot plan + apply + verify | `softgnn generate --project my-app` |
-| One-shot without replan | `softgnn generate --project my-app --replan-iters 0` |
-| Review before patching | `softgnn plan --project my-app` |
-| Apply reviewed plan | `softgnn apply --project my-app` |
-| Inspect change impact | `softgnn scan --project my-app` |
-| Runtime test map | `softgnn map --project my-app` |
-| Health check | `softgnn doctor --project my-app` |
-| Impact of one symbol | `softgnn impact --project my-app FUNC:foo` |
-| Developer triage | `softgnn triage --project my-app "bug description"` |
-
-More details: [docs/quickstart.md](docs/quickstart.md)
-
-The full guide covers:
-
-```text
-simple CLI workflow
-plan cache and apply-from-plan
-one-shot generate workflow
-Git PR workflow
-no-Git filesystem snapshot workflow
-first-run full-scan workflow
-explicit target workflow
-runtime coverage mapping
-patch/verify/repair/partial-rollback flow
-apply feedback and failed-target replanning
-```
-
----
-
-## Safety model
-
-SoftGNN is conservative by default:
-
-```text
-writes tests/ only
-wraps generated code in markers
-validates LLM output before patching
-runs pytest before accepting generated tests
-rolls back failed generated edits by default
-never requires committing API keys
-```
-
-Generated test blocks are marked:
-
-```python
-# <softgnn-generated target="FUNC:example" start>
-...
-# <softgnn-generated target="FUNC:example" end>
-```
-
-Recommended workflow:
-
-```text
-run on a feature branch
-start with --mode plan
-use --mode patch after review
-inspect git diff before commit
-```
-
----
-
-## CLI highlights
-
-```powershell
-python softgnn.py pr-scan --project social-link --repo-path "C:\path\to\repo" --base main --head HEAD
-```
-
-```powershell
-python softgnn.py test-map --project social-link --repo-path "C:\path\to\repo" --mode per-test --persist
-```
-
-```powershell
-python softgnn.py generate-tests --project social-link --repo-path "C:\path\to\repo" --mode plan --generation-strategy auto
-```
+> PyTorch / PyTorch Geometric installs can be platform-specific. Follow the official PyTorch and PyG installation guides for your environment.
 
 ---
 
 ## Project status
 
-Current release: **v0.1.15**
+Current release: **v0.1.25**
 
 This is a developer preview. Generated tests should be reviewed before commit. Production-code fixes are intentionally out of scope for v0.1.
 
@@ -407,11 +401,9 @@ This is a developer preview. Generated tests should be reviewed before commit. P
 
 ## Roadmap
 
-Short version:
-
 ```text
-M4  Runtime-Proven Test Generation
-M5  Graph Impact Report / Dashboard
+M4  Runtime-Proven Test Generation         ✅ complete
+M5  Smart Scan + Dashboard + File Generate ✅ complete
 M6  Learned Test Prioritization / GNN Ranking
 M7  Multi-Agent Quality Swarm
 M8  Large-scale repo automation
@@ -428,4 +420,3 @@ Read more:
 ## License
 
 MIT License. See [LICENSE](LICENSE).
-
