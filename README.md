@@ -13,6 +13,8 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![LLM](https://img.shields.io/badge/LLM-Gemini%20%7C%20OpenAI--compatible-8A2BE2)](#configure-an-llm-provider)
 
+🎬 **[Watch the demo video](docs/assets/softgnn-demo.mp4)**
+
 </div>
 
 ---
