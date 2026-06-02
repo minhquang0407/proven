@@ -14,6 +14,7 @@
 [![LLM](https://img.shields.io/badge/LLM-Gemini%20%7C%20OpenAI--compatible-8A2BE2)](#configure-an-llm-provider)
 
 🎬 **[Watch the demo video](https://github.com/minhquang0407/softgnn-advisor/releases/tag/v0.1.27)** or https://www.youtube.com/watch?v=3d071eUmfq0
+<img width="574" height="396" alt="image" src="https://github.com/user-attachments/assets/b14c4da0-850b-4537-918c-ab6e0957dcb9" />
 
 </div>
 
