@@ -487,23 +487,7 @@ def impact(project, mode, gnn_types, function_name):
 @click.argument('bug_description')
 def triage(project, bug_description):
     """Recommend the best-suited engineers for a new bug."""
-    import pandas as pd
-    import re
-    try:
-        import torch
-        import torch_geometric.transforms as T
-        from softgnn_advisor.core.ai.predicter import Predictor
-        from softgnn_advisor.core.ai.gnn_architecture import HGTLinkPrediction
-    except ImportError as exc:
-        raise click.ClickException(
-            "triage requires GNN dependencies and a trained model. Install with: "
-            "pip install \"softgnn-advisor[gnn]\""
-        ) from exc
-    from softgnn_advisor.config.settings import get_project_paths
-    from softgnn_advisor.core.file_filters import is_source_code_file, is_valid_developer_name
-    from softgnn_advisor.core.metadata_utils import load_metadata
-    from softgnn_advisor.core.developer_aliases import load_developer_aliases, resolve_developer_identity
-    from softgnn_advisor.infrastructure.pipelines.feature_encoder import CodebaseFeatureEncoder
+    from softgnn_advisor.core.triage_engine import TriageEngine
 
     console.print(Panel(
         f"[SEARCH] Bug Triage Analysis\n"
@@ -511,193 +495,17 @@ def triage(project, bug_description):
         f"Bug: [italic]{bug_description}[/italic]"
     ))
 
-    paths = get_project_paths(project)
-    PYG_DATA_PATH = paths['PYG_DATA_PATH']
-    MODEL_PATH = paths['MODEL_PATH']
-    NODES_DATA_PATH = paths['NODES_DATA_PATH']
-    METADATA_PATH = paths['METADATA_PATH']
-    metadata = load_metadata(METADATA_PATH)
-    source_path = metadata.get('source_path')
-    developer_aliases = load_developer_aliases(paths['DEVELOPER_ALIASES_PATH'])
+    engine = TriageEngine(project)
+    result = engine.triage(bug_description)
 
-    if not os.path.exists(MODEL_PATH) or not os.path.exists(PYG_DATA_PATH):
-        console.print(f"[bold red][ERROR] Model or Data not found for project '{project}'.[/bold red]")
-        console.print("Run [cyan]softgnn etl[/cyan] and [cyan]softgnn train[/cyan] first.")
+    if result.get("status") == "error":
+        console.print(f"[bold red][ERROR] {result.get('message')}[/bold red]")
+        return
+    elif result.get("status") == "warning":
+        console.print(f"[yellow]{result.get('message')}[/yellow]")
         return
 
-    # 1. Encode bug description into a feature vector
-    with console.status("Encoding bug semantics...", spinner="dots"):
-        encoder = CodebaseFeatureEncoder()
-        bug_vec = encoder.model.encode([bug_description], convert_to_numpy=True)[0]
-    console.print(f"Bug encoded as vector of dimension [cyan]{len(bug_vec)}[/cyan]")
-
-    # 2. Load graph + model (same transform as training)
-    data = torch.load(PYG_DATA_PATH, map_location='cpu', weights_only=False)
-    data = T.ToUndirected()(data)
-
-    model = HGTLinkPrediction(128, 128, data=data, dropout=0.0)
-    model.load_state_dict(torch.load(MODEL_PATH, map_location='cpu', weights_only=True))
-
-    # 3. Build Predictor (computes all embeddings via full-batch forward pass)
-    predictor = Predictor(model, data=data)
-    device = predictor.device
-
-    # 4. Project bug vector into the same 128-dim embedding space as the graph nodes.
-    #    We reuse the 'Commit' projection layer because a bug report is semantically
-    #    closest to a commit description (both describe code changes in natural language).
-    bug_tensor = torch.tensor(bug_vec, dtype=torch.float32).unsqueeze(0).to(device)
-    with torch.no_grad():
-        projected_bug = predictor.model.encoder.lin_dict['Commit'](bug_tensor).relu_()
-
-    # 5. Score all Developer nodes against the projected bug vector (GNN component)
-    df = pd.read_csv(NODES_DATA_PATH)
-    dev_df = df[df['type'] == 'Developer'].copy()
-
-    if dev_df.empty:
-        console.print("[yellow]No Developer nodes found in the graph. Run ETL on a Git repo first.[/yellow]")
-        return
-
-    with console.status("Querying Developer subgraph...", spinner="dots"):
-        if 'Developer' not in predictor.embeddings:
-            console.print("[yellow]No Developer embeddings found in model.[/yellow]")
-            return
-
-        dev_embeddings = predictor.embeddings['Developer'].to(device)
-        decoder_key = '__authored_by__'
-        if decoder_key not in predictor.model.decoders:
-            decoder_key = list(predictor.model.decoders.keys())[0]
-        decoder = predictor.model.decoders[decoder_key]
-
-        batch_src = projected_bug.expand(dev_embeddings.size(0), -1)
-        with torch.no_grad():
-            logits = decoder(batch_src, dev_embeddings)
-            gnn_scores = torch.sigmoid(logits).view(-1).detach().cpu().numpy()
-
-    def lexical_file_relevance(rel_path):
-        """Lightweight source-content boost for short bug reports."""
-        if not source_path:
-            return 0.0
-        full_path = os.path.join(source_path, rel_path.replace('/', os.sep))
-        try:
-            with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                text = f.read(20000).lower()
-        except Exception:
-            return 0.0
-
-        bug_text = bug_description.lower()
-        bug_terms = set(re.findall(r"[a-zA-Z_]+", bug_text))
-        file_loading_intent = any(term in bug_text for term in ['file', 'load', 'loading', 'read', 'upload', 'download', 'tải', 'tai'])
-        if file_loading_intent:
-            terms = [
-                'open(', 'read(', 'read_csv', 'read_excel', 'json.load', 'yaml.safe_load',
-                'uploaded_file', 'file_uploader', 'upload', 'download', 'load', 'loads',
-                'parse', 'extract', 'path', 'filepath', 'filename', 'csv', 'json', 'pickle'
-            ]
-        else:
-            terms = list(bug_terms)
-
-        hits = sum(1 for term in terms if term and term in text)
-        path_bonus = sum(1 for term in terms if term and term.replace('(', '') in rel_path.lower())
-        return min(1.0, (hits + path_bonus) / 8.0)
-
-    # 6. Semantic bug -> File matching component
-    file_df = df[df['type'] == 'File'].copy()
-    file_df['rel_path'] = file_df['id'].astype(str).str.replace('FILE:', '', regex=False)
-    # For semantic bug matching, prefer real source files only.
-    # Ownership graph can still contain config/docs, but semantic matching should stay focused.
-    file_df = file_df[file_df['rel_path'].apply(is_source_code_file)]
-    if source_path:
-        file_df = file_df[file_df['rel_path'].apply(lambda p: os.path.exists(os.path.join(source_path, p.replace('/', os.sep))))]
-    file_semantic_scores = {}
-    top_related_files = []
-    if 'File' in data.node_types and not file_df.empty:
-        file_x = data['File'].x.float()
-        bug_feature = torch.tensor(bug_vec, dtype=torch.float32).view(1, -1)
-        if file_x.size(1) == bug_feature.size(1):
-            sims = torch.nn.functional.cosine_similarity(file_x, bug_feature.expand(file_x.size(0), -1), dim=1)
-            for _, row in file_df.iterrows():
-                pyg_id = int(row['pyg_id'])
-                if pyg_id < len(sims):
-                    file_id = str(row['id']).replace('FILE:', '')
-                    semantic_score = float((sims[pyg_id].item() + 1.0) / 2.0)
-                    lexical_score = lexical_file_relevance(file_id)
-                    combined_score = (0.65 * semantic_score) + (0.35 * lexical_score)
-                    file_semantic_scores[pyg_id] = combined_score
-                    top_related_files.append((file_id, combined_score, semantic_score, lexical_score, pyg_id))
-            top_related_files.sort(key=lambda x: x[1], reverse=True)
-            top_related_files = top_related_files[:5]
-
-    # 7. Git ownership component: Developer -> Commit -> File
-    commit_to_devs = {}
-    if ('Developer', 'authored_by', 'Commit') in data.edge_types:
-        for src, dst in data[('Developer', 'authored_by', 'Commit')].edge_index.t().tolist():
-            commit_to_devs[int(dst)] = int(src)
-
-    dev_ownership_raw = {}
-    dev_direct_evidence = {}
-    dev_broad_evidence = {}
-    if ('Commit', 'modifies', 'File') in data.edge_types:
-        related_file_ids = {pyg_id for _, _, _, _, pyg_id in top_related_files}
-        file_name_by_pyg = {
-            int(row['pyg_id']): str(row['id']).replace('FILE:', '')
-            for _, row in file_df.iterrows()
-        }
-        for commit_id, file_id in data[('Commit', 'modifies', 'File')].edge_index.t().tolist():
-            commit_id = int(commit_id)
-            file_id = int(file_id)
-            dev_id = commit_to_devs.get(commit_id)
-            if dev_id is None:
-                continue
-
-            sem = file_semantic_scores.get(file_id, 0.0)
-            is_direct = file_id in related_file_ids
-            # Direct top-related files should dominate ownership scoring.
-            # Other source files only provide weak fallback ownership context.
-            contribution = sem if is_direct else sem * 0.10
-            dev_ownership_raw[dev_id] = dev_ownership_raw.get(dev_id, 0.0) + max(contribution, 0.001)
-
-            fname = file_name_by_pyg.get(file_id)
-            if fname:
-                target = dev_direct_evidence if is_direct else dev_broad_evidence
-                target.setdefault(dev_id, {})[fname] = target.setdefault(dev_id, {}).get(fname, 0) + 1
-
-    max_ownership = max(dev_ownership_raw.values()) if dev_ownership_raw else 1.0
-
-    # Fixed initial weights approved by user
-    W_GNN = 0.45
-    W_GIT = 0.35
-    W_SEM = 0.20
-
-    best_by_name = {}
-    for _, row in dev_df.iterrows():
-        dev_pyg_id = int(row['pyg_id'])
-        dev_name = resolve_developer_identity(str(row['name']), '', developer_aliases)
-        if not is_valid_developer_name(dev_name):
-            continue
-        gnn_score = float(gnn_scores[dev_pyg_id]) if dev_pyg_id < len(gnn_scores) else 0.0
-        git_score = float(dev_ownership_raw.get(dev_pyg_id, 0.0) / max_ownership) if max_ownership else 0.0
-        direct_evidence = dev_direct_evidence.get(dev_pyg_id, {})
-        broad_evidence = dev_broad_evidence.get(dev_pyg_id, {})
-        sem_score = 0.0
-        if direct_evidence and top_related_files:
-            touched_related = set(direct_evidence.keys())
-            top_file_names = {name for name, _, _, _, _ in top_related_files}
-            sem_score = len(touched_related & top_file_names) / max(len(top_file_names), 1)
-        final_score = (W_GNN * gnn_score) + (W_GIT * git_score) + (W_SEM * sem_score)
-
-        current = best_by_name.get(dev_name)
-        if current is None or final_score > current['final_score']:
-            best_by_name[dev_name] = {
-                'final_score': final_score,
-                'gnn_score': gnn_score,
-                'git_score': git_score,
-                'sem_score': sem_score,
-                'direct_evidence': direct_evidence,
-                'broad_evidence': broad_evidence,
-            }
-
-    ranked = sorted(best_by_name.items(), key=lambda x: x[1]['final_score'], reverse=True)
-
+    top_related_files = result.get("related_files", [])
     if top_related_files:
         related_table = Table(title="Bug-related Files (Hybrid Relevance)")
         related_table.add_column("Rank", justify="right", style="cyan")
@@ -705,16 +513,17 @@ def triage(project, bug_description):
         related_table.add_column("Relevance", justify="right", style="green")
         related_table.add_column("Semantic", justify="right", style="blue")
         related_table.add_column("Lexical", justify="right", style="yellow")
-        for idx, (fname, relevance, semantic_score, lexical_score, _) in enumerate(top_related_files, start=1):
+        for f_info in top_related_files:
             related_table.add_row(
-                str(idx),
-                fname,
-                f"{relevance * 100:.1f}%",
-                f"{semantic_score * 100:.1f}%",
-                f"{lexical_score * 100:.1f}%",
+                str(f_info["rank"]),
+                f_info["file"],
+                f"{f_info['relevance'] * 100:.1f}%",
+                f"{f_info['semantic_score'] * 100:.1f}%",
+                f"{f_info['lexical_score'] * 100:.1f}%",
             )
         console.print(related_table)
 
+    top_engineers = result.get("top_engineers", [])
     table = Table(title="Top Recommended Developers (Hybrid Scoring)")
     table.add_column("Rank", justify="right", style="cyan", no_wrap=True)
     table.add_column("Developer", style="magenta")
@@ -723,23 +532,14 @@ def triage(project, bug_description):
     table.add_column("Git", justify="right", style="yellow")
     table.add_column("Evidence", style="white")
 
-    for rank, (dev_name, info) in enumerate(ranked[:3], start=1):
-        evidence_source = info['direct_evidence'] or info['broad_evidence']
-        evidence_items = sorted(evidence_source.items(), key=lambda x: x[1], reverse=True)[:3]
-        if info['direct_evidence']:
-            evidence_prefix = "Direct: "
-        elif evidence_items:
-            evidence_prefix = "Fallback: "
-        else:
-            evidence_prefix = ""
-        evidence_text = evidence_prefix + ", ".join([f"{f} x{c}" for f, c in evidence_items]) if evidence_items else "No direct file evidence"
+    for eng in top_engineers:
         table.add_row(
-            str(rank),
-            dev_name,
-            f"{info['final_score'] * 100:.1f}%",
-            f"{info['gnn_score'] * 100:.1f}%",
-            f"{info['git_score'] * 100:.1f}%",
-            evidence_text,
+            str(eng["rank"]),
+            eng["developer"],
+            f"{eng['final_score'] * 100:.1f}%",
+            f"{eng['gnn_score'] * 100:.1f}%",
+            f"{eng['git_score'] * 100:.1f}%",
+            eng["evidence"],
         )
 
     console.print(table)
@@ -1952,6 +1752,69 @@ def agent_refresh(pytest_args, project, path, as_json):
         click.echo(json.dumps(result, indent=2, ensure_ascii=False))
     else:
         console.print(f"[bold green]Runtime edges count:[/bold green] {result.get('runtime_edges_count')}")
+
+
+@agent_group.command('impact')
+@click.option('--target', required=True, help='Target function or file ID, e.g. FUNC:foo')
+@click.option('--mode', type=click.Choice(['hybrid', 'graph', 'gnn']), default='hybrid', show_default=True, help='Impact mode')
+@click.option('--threshold', default=0.1, show_default=True, help='Minimum score threshold')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_impact(target, mode, threshold, project, path, as_json):
+    """Query direct dependents and latent HGT blast radius for a target symbol."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path)
+    result = svc.predict_impact(target_symbol=target, mode=mode, threshold=threshold)
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold cyan]Target:[/bold cyan] {result.get('target')}")
+        console.print(f"[bold green]Direct Dependents:[/bold green] {len(result.get('direct_dependents', []))}")
+        console.print(f"[bold magenta]Latent Risk Candidates:[/bold magenta] {len(result.get('latent_risk_candidates', []))}")
+
+
+@agent_group.command('triage')
+@click.argument('query')
+@click.option('--max-devs', default=3, show_default=True, help='Maximum recommended developers')
+@click.option('--max-files', default=5, show_default=True, help='Maximum related files')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_triage(query, max_devs, max_files, project, path, as_json):
+    """Recommend best-suited engineers and related files for a bug description or PR."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path)
+    result = svc.triage_bug(query=query, max_devs=max_devs, max_files=max_files)
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold cyan]Query:[/bold cyan] {query}")
+        console.print(f"[bold green]Top Engineers:[/bold green] {len(result.get('top_engineers', []))}")
+        console.print(f"[bold yellow]Related Files:[/bold yellow] {len(result.get('related_files', []))}")
+
+
+@agent_group.command('train')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_train(project, path, as_json):
+    """Trigger HGT Graph AI training for the current project."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path)
+    result = svc.train_gnn()
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        status_color = 'green' if result.get('status') == 'success' else 'red'
+        console.print(f"[{status_color}]{result.get('message')}[/{status_color}]")
+
 
 
 if __name__ == '__main__':

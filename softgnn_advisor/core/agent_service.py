@@ -751,3 +751,113 @@ class AgentService:
         if node.args.kwarg:
             args_str.append(f'**{node.args.kwarg.arg}')
         return f"def {node.name}({', '.join(args_str)})"
+
+    def predict_impact(self, target_symbol: str, mode: str = "hybrid", threshold: float = 0.1) -> dict:
+        """Query direct dependents and latent HGT blast radius for a target symbol."""
+        if self.language != "python":
+            return {
+                "status": "warning",
+                "message": f"Impact prediction currently supports Python graphs (detected {self.language}).",
+                "target": target_symbol,
+                "direct_dependents": [],
+                "latent_risk_candidates": [],
+            }
+
+        self.ensure_initialized(auto_etl=True)
+        try:
+            from softgnn_advisor.core.impact_engine import ImpactEngine
+            engine = ImpactEngine(self.project)
+            result = engine.analyze(target_symbol, mode=mode)
+        except Exception as exc:
+            return {
+                "status": "error",
+                "message": f"Failed to predict impact: {exc}",
+                "target": target_symbol,
+                "direct_dependents": [],
+                "latent_risk_candidates": [],
+            }
+
+        if result is None:
+            return {
+                "status": "warning",
+                "message": f"Target symbol '{target_symbol}' could not be resolved in the project graph.",
+                "target": target_symbol,
+                "direct_impact_count": 0,
+                "direct_dependents": [],
+                "latent_risk_candidates": [],
+            }
+
+        direct_deps = [
+            {
+                "symbol": c.label,
+                "type": c.node_type,
+                "score": round(c.final_score, 4),
+                "relation": ", ".join(c.relations[:2]) if c.relations else "direct dependency",
+                "path": c.paths[0] if c.paths else "",
+            }
+            for c in result.candidates if "Direct" in c.tiers
+        ]
+
+        latent_candidates = [
+            {
+                "symbol": c.label,
+                "type": c.node_type,
+                "score": round(c.final_score, 4),
+                "gnn_score": round(c.gnn_score, 4),
+                "relation": ", ".join(c.relations[:2]) or "Latent GNN Correlation",
+                "path": c.paths[0] if c.paths else "",
+            }
+            for c in result.candidates if "Direct" not in c.tiers
+        ]
+
+        return {
+            "status": "success",
+            "project": self.project,
+            "target": result.target.full_id,
+            "target_type": result.target.node_type,
+            "mode": result.mode,
+            "direct_impact_count": result.direct_count,
+            "direct_dependents": direct_deps,
+            "latent_risk_candidates": latent_candidates,
+            "warnings": result.warnings,
+        }
+
+    def triage_bug(self, query: str, max_devs: int = 3, max_files: int = 5) -> dict:
+        """Recommend best-suited engineers and related files for a bug description or PR change."""
+        self.ensure_initialized(auto_etl=True)
+        from softgnn_advisor.core.triage_engine import TriageEngine
+        engine = TriageEngine(self.project, self.repo_path)
+        return engine.triage(query, max_devs=max_devs, max_files=max_files)
+
+    def train_gnn(self) -> dict:
+        """Trigger HGT Graph AI training for the current project."""
+        self.ensure_initialized(auto_etl=True)
+        try:
+            from softgnn_advisor.scripts.train_model import run_optimization
+        except ImportError as exc:
+            return {
+                "status": "error",
+                "message": f"Training requires GNN dependencies: {exc}. Install with `pip install softgnn-advisor[gnn]`",
+            }
+
+        import time
+        start_time = time.time()
+        try:
+            run_optimization(self.project)
+            duration = round(time.time() - start_time, 2)
+            meta = load_metadata(self.paths['METADATA_PATH'])
+            return {
+                "status": "success",
+                "project": self.project,
+                "duration_seconds": duration,
+                "best_val_auc": meta.get("best_val_auc"),
+                "test_auc": meta.get("test_auc"),
+                "message": f"HGT model trained successfully in {duration}s (Test AUC: {meta.get('test_auc')}).",
+            }
+        except Exception as exc:
+            return {
+                "status": "error",
+                "project": self.project,
+                "message": f"Training failed: {exc}",
+            }
+

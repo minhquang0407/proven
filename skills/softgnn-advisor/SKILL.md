@@ -192,3 +192,44 @@ python skills/softgnn-advisor/scripts/scan_impact.py --fan-out
 - Dispatch $N$ concurrent Sub-Agents running Stages 2–6 in parallel.
 - Process-isolated temporary sessions (`tempfile.TemporaryDirectory`) guarantee **Zero Race Conditions** on coverage files.
 - Parent Agent performs Stage 7 to finalize the audit.
+
+---
+
+## 🧠 Tier 2 Superpowers: Blast Radius Prediction, Bug Triage & AI Brain
+
+SoftGNN equips Coding Agents with advanced architectural intelligence beyond basic unit test authoring:
+
+### 1. Latent Blast Radius Prediction (`query_impact.py`)
+When you modify a core function or class, find out not only who imports it directly, but also which remote files have high **GNN Latent Risk** (similar graph embeddings and historical co-change patterns):
+
+```bash
+python skills/softgnn-advisor/scripts/query_impact.py --target "FUNC:<target_name>" --mode hybrid
+# Or via CLI:
+# softgnn agent impact --target "FUNC:<target_name>" --mode hybrid
+```
+
+- Examine `direct_dependents` (functions/files directly calling or importing the target).
+- Examine `latent_risk_candidates` (components at risk of breaking due to latent semantic coupling).
+- **Proactive Action**: Write regression tests for both direct and high-risk latent candidates!
+
+### 2. Semantic Bug Triage & Reviewer Recommendation (`triage_expert.py`)
+When resolving a bug or finalizing a Pull Request, identify the most qualified code owners and related files:
+
+```bash
+python skills/softgnn-advisor/scripts/triage_expert.py --query "Timeout connecting to payment gateway"
+# Or via CLI:
+# softgnn agent triage "Timeout connecting to payment gateway"
+```
+
+- Use `top_engineers` to automatically tag relevant reviewers (`@username`) in PR descriptions or issue comments.
+- Inspect `related_files` to verify that all culprit source files were inspected.
+
+### 3. Offline HGT Graph AI Training (`train_gnn.py`)
+To train or update the local neural graph embeddings after major codebase refactoring:
+
+```bash
+python skills/softgnn-advisor/scripts/train_gnn.py
+# Or via CLI:
+# softgnn agent train
+```
+

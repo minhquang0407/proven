@@ -107,6 +107,58 @@ softgnn agent refresh [--repo PATH]
 
 ---
 
+### `softgnn agent impact`
+Queries direct downstream callers and latent HGT blast radius risk for a specific target symbol.
+
+```bash
+softgnn agent impact --target TARGET [OPTIONS]
+```
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--target` | String | **Yes** | Target symbol identifier (e.g. `FUNC:process_payment`). |
+| `--mode` | Choice | `hybrid` | Analysis mode (`hybrid`, `graph`, `gnn`). |
+| `--threshold` | Float | `0.1` | Score cutoff threshold. |
+| `--project` | String | Auto | Project identifier name. |
+| `--json/--no-json` | Flag | `True` | Emit output as JSON. |
+
+**Example:**
+```bash
+softgnn agent impact --target "FUNC:checkout" --mode hybrid
+```
+
+---
+
+### `softgnn agent triage`
+Recommends expert developers and identifies culprit/related files for a bug description or PR change.
+
+```bash
+softgnn agent triage "QUERY_DESCRIPTION" [OPTIONS]
+```
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `QUERY` | String | **Yes** | Bug description or PR summary. |
+| `--max-devs` | Int | `3` | Maximum recommended developers. |
+| `--max-files` | Int | `5` | Maximum related files. |
+| `--json/--no-json` | Flag | `True` | Emit output as JSON. |
+
+**Example:**
+```bash
+softgnn agent triage "Database connection timeout under heavy load"
+```
+
+---
+
+### `softgnn agent train`
+Triggers offline HGT Graph AI training to refresh embedding representations.
+
+```bash
+softgnn agent train [--project PROJECT]
+```
+
+---
+
 ## 2. 🖥️ Interactive Web Dashboard
 
 Launch the Cytoscape.js web-based knowledge graph visualizer and control center.
