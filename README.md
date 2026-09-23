@@ -15,6 +15,10 @@
 
 🎬 **[Watch Demo Video](https://www.youtube.com/watch?v=3d071eUmfq0)** · 🚀 **[Quickstart](#quickstart)** · 📖 **[Documentation](skills/softgnn-advisor/SKILL.md)**
 
+<br/>
+
+<img width="650" alt="SoftGNN Interactive Graph Dashboard" src="https://github.com/user-attachments/assets/b14c4da0-850b-4537-918c-ab6e0957dcb9" />
+
 </div>
 
 ---
@@ -82,14 +86,19 @@ Ask your agent:
 > *"Use softgnn-advisor to scan my changes and write runtime-proven tests with mutation checks."*
 
 ### 3. Local CLI & Interactive Web Dashboard
-Visualize your code graph and manage test impact from a visual Cytoscape UI:
+Visualize your entire codebase knowledge graph and manage test impact from an interactive web UI:
 
 ```bash
 pip install softgnn-advisor
 
-# Open local visual knowledge graph
+# Launch local visual dashboard
 softgnn dashboard --project my-project --open
 ```
+
+Opens at `http://127.0.0.1:8765`:
+- **Interactive Cytoscape Graph**: Visually navigate functions, classes, and runtime test-to-code edges.
+- **Node Filtering & Inspection**: Filter by type (`FUNC`, `CLASS`, `FILE`, `TEST`) or search symbols by name.
+- **One-Click Actions**: Run Scans, trigger Runtime Mapping, and generate tests directly from the browser UI.
 
 ---
 
