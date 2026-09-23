@@ -23,13 +23,25 @@
 
 ---
 
-## 💡 The Problem SoftGNN Solves
+## 💡 Core Philosophy: "LLM = Author, SoftGNN = Ground Truth"
 
 AI Coding Agents write tests fast, but **two massive blindspots remain**:
 1. **The Fake Coverage Trap**: A test passes `pytest`, but due to early returns or over-mocking, **0% of the modified target function code is actually executed**.
 2. **The Weak Assertion Trap**: A test executes the function, but only asserts `assert res is not None`. If a breaking logic bug is introduced, the test still passes.
 
-> **SoftGNN PRO is the Ground Truth Gatekeeper.** It scans PR impact, verifies real execution at runtime, diagnoses early exits, and performs surgical micro-mutations to guarantee **Titanium-Grade tests**.
+```mermaid
+flowchart LR
+    Scan[1. SCAN<br/>Blast Radius] --> Context[2. CONTEXT<br/>AST & Callers]
+    Context --> Author[3. AUTHOR<br/>Agent writes test]
+    Author --> RunProof{4. RUNTIME<br/>Real execution?}
+    RunProof -->|Pass| MutProof{5. MUTATION<br/>Kill mutants?}
+    RunProof -->|Fail: Early Exit| Repair[6. REPAIR LOOP<br/>Branch diagnosis]
+    MutProof -->|Fail: Weak Assert| Repair
+    Repair --> RunProof
+    MutProof -->|Pass: TITANIUM| Audit[7. FINAL AUDIT<br/>Refresh graph]
+```
+
+> **SoftGNN PRO is your infallible Ground Truth Gatekeeper.** It proves real execution, diagnoses early exits, and performs surgical micro-mutations to guarantee **Titanium-Grade tests**.
 
 ---
 
