@@ -181,6 +181,25 @@ Emits decoupled task payloads so a parent orchestrator can dispatch $N$ independ
 
 ---
 
+## 💻 CLI Quick Reference
+
+| Command | Action |
+| :--- | :--- |
+| `softgnn agent scan` | Detect altered functions lacking runtime test proof |
+| `softgnn agent context --target <id>` | Query AST line ranges, callers, and import dependencies |
+| `softgnn agent verify --target <id> --test <path>` | Verify runtime coverage execution proof |
+| `softgnn agent verify ... --mutation-check` | **PRO**: Invert AST operators to kill weak assertions (**Titanium Proof**) |
+| `softgnn dashboard --project <app> --open` | Launch interactive Cytoscape.js web knowledge graph |
+| `softgnn setup <repo> --project <app>` | Build initial code graph & filesystem baseline snapshot |
+| `softgnn pr-scan --project <app> --report` | Scan PR diff, compute blast radius & export HTML report |
+| `softgnn generate --project <app>` | Auto-generate missing tests with rollback safety |
+| `softgnn doctor --project <app>` | Validate dependencies, metadata, and graph integrity |
+| `softgnn triage --project <app> "bug"` | Recommend best-suited code owners for a bug |
+
+📖 *For the complete reference of all 18 commands, options, and pipelines, see [docs/cli-reference.md](docs/cli-reference.md).*
+
+---
+
 ## 🧪 Test Suite
 
 SoftGNN Advisor is verified across a comprehensive test suite covering AST parsing, runtime mapping, self-healing diagnostics, mutation gates, and GitHub Action workflows:
