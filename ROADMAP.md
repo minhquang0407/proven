@@ -11,7 +11,7 @@ Exposed as an MCP server so any AI agent can reason about code risk and coverage
 
 ## v0.1 — Single-Agent LLM-Assisted Test Generation
 
-Status: **✅ complete**
+Status: **Complete**
 
 ```text
 code graph extraction
@@ -32,7 +32,7 @@ PR scan confirmation
 
 ## M4 — Runtime-Proven Test Generation
 
-Status: **✅ complete**
+Status: **Complete**
 
 ```text
 target-level runtime proof gate
@@ -46,7 +46,7 @@ quality gate against smoke-only tests
 
 ## M5 — Smart Scan + Dashboard + File-Scoped Generate
 
-Status: **✅ complete**
+Status: **Complete**
 
 ```text
 smart scan fallback for empty diffs (git pull / same-branch)

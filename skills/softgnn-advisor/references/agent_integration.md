@@ -48,21 +48,27 @@ Claude Code will read the `SKILL.md` instructions whenever asked to write tests 
 
 ---
 
-## 3. Standard Agent Workflow
+## 3. Standard 7-Stage PRO Workflow
 
 ```text
-Step 1: Scan
+Stage 1: Scan Impact & Gaps
 python skills/softgnn-advisor/scripts/scan_impact.py
 
-Step 2: Get Context
+Stage 2: Get Context
 python skills/softgnn-advisor/scripts/get_target_context.py --target FUNC:<target_name>
 
-Step 3: Write Test
-Agent uses its native intelligence to author tests/test_<module>.py
+Stage 3: Author Behavioral Test
+Agent authors tests/test_<module>.py with strong assertions
 
-Step 4: Verify Runtime Proof Gate
+Stage 4: Verify Runtime Proof Gate
 python skills/softgnn-advisor/scripts/verify_runtime_proof.py --target FUNC:<target_name> --test tests/test_<module>.py
 
-Step 5: Refresh Graph
+Stage 5: Verify Micro-Mutation Gate (Titanium Grade)
+python skills/softgnn-advisor/scripts/verify_runtime_proof.py --target FUNC:<target_name> --test tests/test_<module>.py --mutation-check
+
+Stage 6: Repair Loop (If Stage 4 or 5 Fails)
+Read self-healing diagnosis or mutant report, fix test, and re-verify
+
+Stage 7: Refresh Graph & Audit
 python skills/softgnn-advisor/scripts/refresh_runtime_map.py
 ```

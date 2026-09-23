@@ -15,221 +15,102 @@ tags:
 
 # SoftGNN Advisor — Agent Skill (PRO Edition)
 
-You are paired with **SoftGNN Advisor v1.0.0 (PRO Edition)**, a graph-guided, runtime-proven, and mutation-verified code intelligence engine.
+You are paired with **SoftGNN Advisor v1.0.0 (PRO Edition)**.
 
 ## Core Philosophy: "LLM = Author, SoftGNN = Ground Truth"
 
-- **YOU (the Agent)** are the author. You understand the code semantics, business intent, edge cases, and fixture designs. You write and edit the test files.
+- **YOU (the Agent)** are the author. You analyze code semantics, understand intent, and write/edit test files.
 - **SoftGNN** is your infallible Ground Truth layer:
-  1. It proves whether your tests **actually execute** the modified code at runtime.
-  2. It proves whether your assertions **actually catch bugs** via targeted micro-mutation testing (**TITANIUM PROOF**).
-  3. It diagnoses exactly why a test failed to penetrate a function (Self-Healing Branch Diagnoser).
+  1. It proves whether your tests **actually execute** target bytecode at runtime (no fake passes).
+  2. It proves whether your assertions **catch bugs** by killing surgical AST mutations (**TITANIUM PROOF**).
+  3. It diagnoses exactly why an execution failed or stopped early (Self-Healing Branch Diagnoser).
 
 ---
 
-## The 7-Stage PRO Workflow
+## Progressive Disclosure Index
+
+To preserve context window efficiency, detailed guides are organized into on-demand references:
+
+| Trigger / Situation | Read Reference | Purpose |
+| :--- | :--- | :--- |
+| Test failed Runtime Proof or Mutation | [`references/proof_gate_guide.md`](references/proof_gate_guide.md) | Branch diagnosis codes (`EARLY_BRANCH`, `MOCKED_OUT`) & mutant kill strategies. |
+| User asks for Blast Radius or Reviewer | [`references/tier2_guide.md`](references/tier2_guide.md) | Latent GNN risk prediction, Bug Triage scoring, and offline HGT training. |
+| Non-Python project (TS, Go, Rust, Java) | [`references/universal_lcov_guide.md`](references/universal_lcov_guide.md) | LCOV file mapping, test command flags, and polyglot setup. |
+| Agent setup / multi-agent integration | [`references/agent_integration.md`](references/agent_integration.md) | Setup for Antigravity, Claude Code, Cursor, and `skill-to-workflow`. |
+
+---
+
+## Standard 7-Stage PRO Workflow
 
 ```mermaid
-flowchart TD
-    Scan[1. SCAN: Changed Targets + Blast Radius] --> Context[2. CONTEXT: Implementation, Callers, Fixtures]
-    Context --> Author[3. AUTHOR: Agent Writes Test Code]
-    Author --> RunProof{4. RUNTIME PROOF: Real Execution?}
-    RunProof -->|FAIL: Early Exit or Mock| Repair[6. REPAIR LOOP: Read Diagnosis & Fix]
-    RunProof -->|PASS: Real Lines Hit| MutProof{5. MUTATION PROOF: Kill AST Mutants?}
-    MutProof -->|FAIL: Weak Assertion| Repair
+flowchart LR
+    Scan[1. SCAN<br/>Gaps] --> Context[2. CONTEXT<br/>AST & Callers]
+    Context --> Author[3. AUTHOR<br/>Write tests]
+    Author --> RunProof{4. RUNTIME<br/>Real execution?}
+    RunProof -->|Pass| MutProof{5. MUTATION<br/>Kill mutants?}
+    RunProof -->|Fail: Early Exit| Repair[6. REPAIR LOOP<br/>Branch diagnosis]
+    MutProof -->|Fail: Weak Assert| Repair
     Repair --> RunProof
-    MutProof -->|PASS: TITANIUM PROOF| FinalAudit[7. FINAL AUDIT: Refresh Graph + Report Metrics]
+    MutProof -->|Pass: TITANIUM| Audit[7. FINAL AUDIT<br/>Refresh graph]
 ```
 
----
-
-### Stage 1: SCAN — Impact & Blast Radius
-
-Scan Git diffs or uncommitted changes to identify changed functions lacking runtime test coverage:
-
+### Stage 1: SCAN — Find Untested Changes
 ```bash
 python skills/softgnn-advisor/scripts/scan_impact.py
-# Or via CLI:
-# softgnn agent scan
+# Or CLI: softgnn agent scan
 ```
+- Reads `missing_coverage`: Changed functions lacking runtime tests.
+- If user specified a specific function (e.g. `FUNC:foo`), skip directly to Stage 2.
 
-Examine the JSON output:
-- `missing_coverage`: List of target function IDs (e.g. `FUNC:calculate_tax`) that changed but have **no runtime test hitting them**.
-- `contract_changes`: Signatures, parameters, return types, or behavior modifications.
-- `impact_hotspots`: Top risk nodes in the dependency graph (Blast Radius).
-
-*(If the user explicitly asked for a specific function, skip Stage 1 and proceed directly to Stage 2 with that target).*
-
----
-
-### Stage 2: CONTEXT — Surgical AST & Dependency Extraction
-
-For each target in `missing_coverage`, retrieve complete context before writing a single line of test:
-
+### Stage 2: CONTEXT — Surgical Code Extraction
 ```bash
 python skills/softgnn-advisor/scripts/get_target_context.py --target "FUNC:<target_name>"
-# Or via CLI:
-# softgnn agent context --target "FUNC:<target_name>"
 ```
+- Extract source code, signature, callers, callees, and repo fixture styles.
 
-The returned context contains:
-- `source_code`: The exact function implementation and line numbers.
-- `signature`: Parameter names, default values, and type hints.
-- `imports`: All imports present in the source file.
-- `callers` & `callees`: What invokes this function, and what dependencies it relies on.
-- `suggested_test_file`: Recommended path (e.g. `tests/test_<module>.py`).
-- `existing_test_preview`: Style and fixtures used in existing tests in the repo.
-
----
-
-### Stage 3: AUTHOR — Agent Writes Behavioral Tests
-
-Using your file-writing tools (`write_to_file` or `replace_file_content`), write the test into the suggested test file.
-
-### Authoring Rules:
-1. **Import the real target function directly**:
-   ```python
-   from my_package.module import target_function
-   ```
-2. **NEVER mock the target function itself**:
-   Mocking the target results in 0 executed lines, triggering an immediate failure at Stage 4.
-3. **Mock heavy external boundaries only**:
-   Mock external APIs, database connections, slow CUDA loops, or UI rendering. Allow internal business logic, branching, and data transformations to execute naturally.
-4. **Enforce Strong Assertions (Titanium Preparation)**:
-   - ❌ **FORBIDDEN**: Shallow assertions like `assert res is not None` or `assert isinstance(res, dict)` alone.
-   - ✅ **REQUIRED**: Verify exact calculation results, error conditions (`pytest.raises`), and state transitions.
-5. **Deterministic & Isolated**:
-   Always use `tmp_path` fixture for temporary file operations.
-
----
+### Stage 3: AUTHOR — Write Behavioral Tests
+Write into the suggested test file following **5 Golden Rules**:
+1. **Import real target directly**: `from my_pkg.mod import target_func`.
+2. **NEVER mock target function**: Mocking causes 0 lines executed $\rightarrow$ fails Stage 4.
+3. **Mock heavy external boundaries only**: Mock network APIs, database queries, heavy GPU loops.
+4. **Strong Assertions**: Check exact values, state changes, or expected exceptions (`pytest.raises`).
+5. **Isolation**: Always use `tmp_path` fixture for disk operations.
 
 ### Stage 4: RUNTIME PROOF — Dynamic Tracing Verification
-
-Verify that your newly written test actually penetrates the target function during execution:
-
-#### Python Projects (Track 1 - Native):
 ```bash
 python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
   --target "FUNC:<target_name>" \
   --test "tests/test_<module>.py"
 ```
-
-#### Polyglot Projects (Track 2 - Universal LCOV):
-```bash
-python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
-  --target "FUNC:<target_name>" \
-  --lcov "coverage/lcov.info"
-```
-
-- **`proof_status: "pass"`** (`covered_fraction > 0`): The test actually executed lines inside the function body. Proceed to **Stage 5**.
-- **`proof_status: "fail"`**: Proceed to **Stage 6 (Repair Loop)**.
-
----
+- **`proof_status: "pass"`**: Real execution lines confirmed. Proceed to **Stage 5**.
+- **`proof_status: "fail"`**: Exited early or mocked. Proceed to **Stage 6 (Repair Loop)**.
 
 ### Stage 5: MUTATION PROOF — Kill AST Mutants (PRO Titanium Gate)
-
-> [!IMPORTANT]
-> Passing Stage 4 guarantees the code was executed. Stage 5 guarantees your assertions are strong enough to catch breaking logic bugs.
-
-Execute surgical AST micro-mutation testing against the target function:
-
 ```bash
 python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
   --target "FUNC:<target_name>" \
   --test "tests/test_<module>.py" \
   --mutation-check
 ```
+- **`proof_grade: "TITANIUM"`** (`mutants_survived == 0`): All mutants killed! Proceed to **Stage 7**.
+- **`proof_grade: "SILVER"`** (`mutants_survived > 0`): Weak assertion! Proceed to **Stage 6**.
 
-Inspect the `mutation_proof` block:
-- 🛡️ **`proof_grade: "TITANIUM"`** (`mutants_survived == 0`):
-  All mutations (comparison inversions, arithmetic flips, boolean negations) were **KILLED** by your test assertions. Proceed to **Stage 7**!
-- ⚠️ **`proof_grade: "SILVER"`** (`mutants_survived > 0`):
-  Weak assertion detected! The code was mutated, but your test still passed. Proceed to **Stage 6 (Repair Loop)** to fortify assertions.
+### Stage 6: REPAIR LOOP — Self-Healing & Fortification
+- **If Stage 4 Failed**: Read `self_healing.diagnosis` (e.g. `EARLY_BRANCH` at line 42). Adjust mock/inputs to penetrate the function body. (See [`references/proof_gate_guide.md`](references/proof_gate_guide.md)).
+- **If Stage 5 Failed**: Read `survived_details`. Add specific value assertions to kill survived mutants.
+- Re-verify until **TITANIUM PROOF** is achieved.
 
----
-
-### Stage 6: REPAIR LOOP — Self-Healing Diagnosis & Fortification
-
-When Stage 4 or Stage 5 fails, read the diagnosis in the JSON response:
-
-1. **If Stage 4 Failed (`proof_status: "fail"` / 0% lines executed)**:
-   - Check `self_healing.diagnosis`:
-     - **`EARLY_BRANCH`**: Function exited early at a guard clause (e.g. `if user is None: return` at line 42). **Fix**: Update mock/input arguments to bypass the guard clause and reach the core body.
-     - **`MOCKED_OUT`**: You mocked the target function with `@patch`. **Fix**: Remove mock on the target function.
-     - **`CALLER_EARLY_BRANCH`**: An intermediate caller returned early. **Fix**: Adjust caller parameters.
-2. **If Stage 5 Failed (`mutants_survived > 0`)**:
-   - Check `survived_details` to see which mutation survived (e.g., changing `>` to `<=` did not cause any assert to fail).
-   - **Fix**: Add boundary assert checking exact values (e.g. `assert calculate_fee(100) == 10`).
-3. Re-run Stage 4 & 5 until **TITANIUM PROOF** is achieved.
-
----
-
-### Stage 7: FINAL AUDIT — Refresh Graph & Report Metrics
-
-Once all target functions pass both Runtime and Mutation Proof:
-
+### Stage 7: FINAL AUDIT — Refresh Graph & Report
 ```bash
 python skills/softgnn-advisor/scripts/refresh_runtime_map.py
-# Or via CLI:
-# softgnn agent refresh
 ```
-
-Output a clean summary to the user:
-- **Targets Covered**: Full symbol names and line coverage percentages.
-- **Test Files**: Created or modified paths.
-- **Proof Grade**: `TITANIUM PROOF` (confirming 100% mutants killed).
-- **Blast Radius Status**: Confirmed no regression risks.
+- Report completed targets, test file paths, line coverage percentage, and `TITANIUM PROOF` confirmation.
 
 ---
 
-## Sub-Agent Swarms (`skill-to-workflow` & `invoke_subagent`)
+## Sub-Agent Swarms & Tier 2 Intelligence
 
-For multiple missing targets:
-```bash
-python skills/softgnn-advisor/scripts/scan_impact.py --fan-out
-```
-- SoftGNN emits decoupled JSON payloads.
-- Dispatch $N$ concurrent Sub-Agents running Stages 2–6 in parallel.
-- Process-isolated temporary sessions (`tempfile.TemporaryDirectory`) guarantee **Zero Race Conditions** on coverage files.
-- Parent Agent performs Stage 7 to finalize the audit.
-
----
-
-## 🧠 Tier 2 Superpowers: Blast Radius Prediction, Bug Triage & AI Brain
-
-SoftGNN equips Coding Agents with advanced architectural intelligence beyond basic unit test authoring:
-
-### 1. Latent Blast Radius Prediction (`query_impact.py`)
-When you modify a core function or class, find out not only who imports it directly, but also which remote files have high **GNN Latent Risk** (similar graph embeddings and historical co-change patterns):
-
-```bash
-python skills/softgnn-advisor/scripts/query_impact.py --target "FUNC:<target_name>" --mode hybrid
-# Or via CLI:
-# softgnn agent impact --target "FUNC:<target_name>" --mode hybrid
-```
-
-- Examine `direct_dependents` (functions/files directly calling or importing the target).
-- Examine `latent_risk_candidates` (components at risk of breaking due to latent semantic coupling).
-- **Proactive Action**: Write regression tests for both direct and high-risk latent candidates!
-
-### 2. Semantic Bug Triage & Reviewer Recommendation (`triage_expert.py`)
-When resolving a bug or finalizing a Pull Request, identify the most qualified code owners and related files:
-
-```bash
-python skills/softgnn-advisor/scripts/triage_expert.py --query "Timeout connecting to payment gateway"
-# Or via CLI:
-# softgnn agent triage "Timeout connecting to payment gateway"
-```
-
-- Use `top_engineers` to automatically tag relevant reviewers (`@username`) in PR descriptions or issue comments.
-- Inspect `related_files` to verify that all culprit source files were inspected.
-
-### 3. Offline HGT Graph AI Training (`train_gnn.py`)
-To train or update the local neural graph embeddings after major codebase refactoring:
-
-```bash
-python skills/softgnn-advisor/scripts/train_gnn.py
-# Or via CLI:
-# softgnn agent train
-```
-
+- **Parallel Fan-Out**: Run `python skills/softgnn-advisor/scripts/scan_impact.py --fan-out`. Process-isolated temporary sessions guarantee zero `.coverage` collisions across concurrent sub-agents.
+- **Latent Blast Radius**: Run `python skills/softgnn-advisor/scripts/query_impact.py --target "FUNC:<id>" --mode hybrid`.
+- **Reviewer Triage**: Run `python skills/softgnn-advisor/scripts/triage_expert.py --query "PR or bug description"`.
+*(Detailed guides in [`references/tier2_guide.md`](references/tier2_guide.md)).*

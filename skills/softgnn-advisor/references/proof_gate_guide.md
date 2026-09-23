@@ -99,6 +99,6 @@ python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
 - **Boolean Negation**: `True` $\leftrightarrow$ `False`.
 
 ### Proof Grades:
-- 🛡️ **TITANIUM PROOF**: 100% of mutants were **KILLED** (`mutants_survived == 0`). Every injected bug was caught by assertions.
-- ⚠️ **SILVER PROOF (Weak Assertion Detected)**: One or more mutants **SURVIVED**. The test passed even though the target function was broken! The Agent must add specific value assertions to kill the survived mutants.
+- **TITANIUM PROOF**: 100% of mutants were **KILLED** (`mutants_survived == 0`). Every injected bug was caught by assertions.
+- **SILVER PROOF (Weak Assertion Detected)**: One or more mutants **SURVIVED**. The test passed even though the target function was broken! The Agent must add specific value assertions to kill the survived mutants.
 
