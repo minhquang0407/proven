@@ -1,0 +1,26 @@
+name: SoftGNN PR Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  softgnn-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # Required for posting/updating audit comment on the PR
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed for git diff and commit inspection
+
+      - name: Run SoftGNN PR Quality Gate
+        uses: minhquang0407/softgnn-advisor@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail-on-missing: false # Set to 'true' to block PR merge if test proof is missing
+          comment-pr: true
+          lang: auto # 'auto', 'python', 'typescript', 'go', 'rust', etc.
