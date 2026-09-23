@@ -1,0 +1,12 @@
+{
+  "$schema": "https://skills.sh/schema.json",
+  "name": "softgnn-advisor",
+  "version": "0.1.28",
+  "description": "Graph-guided, runtime-proven test advisor for AI Coding Agents. Detects missing coverage on PR diffs and verifies runtime proof gates.",
+  "skills": [
+    {
+      "name": "softgnn-advisor",
+      "path": "skills/softgnn-advisor"
+    }
+  ]
+}

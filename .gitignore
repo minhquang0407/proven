@@ -212,6 +212,7 @@ __marimo__/
 /data_output/
 *.csv
 *.json
+!.skills.json
 *.gpickle
 
 # 2. Bỏ qua các file bí mật (API Keys)

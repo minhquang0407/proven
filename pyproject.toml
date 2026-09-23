@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "softgnn-advisor"
-version = "0.1.27"
+version = "1.0.0"
 description = "Graph-guided, runtime-proven, LLM-assisted PR test generation with explicit scan-plan-apply workflow"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 keywords = ["testing", "graph", "llm", "code-intelligence", "pytest", "gnn"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",

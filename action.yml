@@ -1,0 +1,80 @@
+name: 'SoftGNN Advisor — PR Quality Gate'
+description: 'Graph-guided PR impact scanner and runtime proof gatekeeper for AI Coding Agents and developers.'
+author: 'minhquang0407'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token for PR commenting and API access (typically secrets.GITHUB_TOKEN)'
+    required: false
+    default: ${{ github.token }}
+  base:
+    description: 'Base git commit/ref to compare against'
+    required: false
+    default: ${{ github.event.pull_request.base.sha || 'main' }}
+  head:
+    description: 'Head git commit/ref to compare against'
+    required: false
+    default: ${{ github.event.pull_request.head.sha || 'HEAD' }}
+  fail-on-missing:
+    description: 'Whether to fail the action if any changed functions lack runtime test proof'
+    required: false
+    default: 'false'
+  comment-pr:
+    description: 'Whether to post/update an audit comment directly on the PR'
+    required: false
+    default: 'true'
+  lang:
+    description: 'Language mode: auto, python, typescript, go, rust, java'
+    required: false
+    default: 'auto'
+  python-version:
+    description: 'Python version to setup'
+    required: false
+    default: '3.11'
+
+outputs:
+  missing-count:
+    description: 'Number of changed functions missing runtime test coverage'
+    value: ${{ steps.audit.outputs.missing-count }}
+  changed-count:
+    description: 'Number of changed functions identified in the PR'
+    value: ${{ steps.audit.outputs.changed-count }}
+  has-gaps:
+    description: 'Whether there are any test coverage gaps (true/false)'
+    value: ${{ steps.audit.outputs.has-gaps }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f "${{ github.action_path }}/pyproject.toml" ]; then
+          pip install "${{ github.action_path }}"
+        else
+          pip install softgnn-advisor
+        fi
+
+    - name: Run SoftGNN Quality Gate
+      id: audit
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        python -m softgnn_advisor.scripts.ci.github_action \
+          --github-token "${{ inputs.github-token }}" \
+          --base "${{ inputs.base }}" \
+          --head "${{ inputs.head }}" \
+          --fail-on-missing "${{ inputs.fail-on-missing }}" \
+          --comment-pr "${{ inputs.comment-pr }}" \
+          --lang "${{ inputs.lang }}"

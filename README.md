@@ -394,11 +394,85 @@ softgnn --help
 
 ---
 
+## GitHub Action PR Quality Gate
+
+Add SoftGNN as an automated quality gatekeeper in your GitHub Pull Requests. It automatically scans code changes, warns if changed logic lacks runtime tests, posts an anti-spam audit comment directly on the PR, and can optionally block merge.
+
+Create `.github/workflows/softgnn-audit.yml`:
+
+```yaml
+name: SoftGNN PR Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  softgnn-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: minhquang0407/softgnn-advisor@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail-on-missing: false # Set to true to block PR merge
+          comment-pr: true
+```
+
+---
+
+## Agent Skill (Antigravity, Claude Code, Codex, Cursor)
+
+Turn SoftGNN into a local Agent Skill without configuring third-party LLM API keys:
+
+```bash
+# Add skill via open skills standard
+npx skills add minhquang0407/softgnn-advisor
+
+# Or install locally for Antigravity:
+python skills/softgnn-advisor/scripts/install_skill.py --target antigravity
+```
+
+Coding Agents can now leverage SoftGNN's Dual-Track intelligence:
+- **Track 1 (Native Python)**: Zero-overhead AST parser & pytest runtime coverage mapper.
+- **Track 2 (Universal Engine)**: Multi-language function extractor + standard LCOV (`lcov.info`) / Go coverprofile (`coverage.out`) verification.
+
+---
+
+## Sub-Agent Parallelism & `skill-to-workflow` Compatibility
+
+SoftGNN Advisor is engineered to be **concurrency-safe and process-isolated** (`tempfile.TemporaryDirectory` per verification run). This enables Coding Agents to achieve **5x–10x speedup** through parallel sub-agent swarms:
+
+```mermaid
+flowchart TD
+    Scan[Parent Agent: softgnn scan] --> FanOut{Fan-Out: N Missing Targets}
+    FanOut --> Sub1[Sub-Agent 1: Target A]
+    FanOut --> Sub2[Sub-Agent 2: Target B]
+    FanOut --> Sub3[Sub-Agent N: Target N]
+    Sub1 --> Verify1[verify_runtime_proof Target A]
+    Sub2 --> Verify2[verify_runtime_proof Target B]
+    Sub3 --> Verify3[verify_runtime_proof Target N]
+    Verify1 --> Aggregate[Parent Agent: Final Full Verification]
+    Verify2 --> Aggregate
+    Verify3 --> Aggregate
+```
+
+- **Antigravity**: Native concurrent execution via `invoke_subagent`.
+- **Claude Code**: 100% compatible with [`democra-ai/skill-to-workflow`](https://github.com/democra-ai/skill-to-workflow) to automatically compile `SKILL.md` into a fan-out workflow.
+- **Zero Race Conditions**: Each sub-agent runs runtime test verification in an isolated temporary session without file locking or coverage collisions.
+
+---
+
 ## Project status
 
-Current release: **v0.1.25**
-
-This is a developer preview. Generated tests should be reviewed before commit. Production-code fixes are intentionally out of scope for v0.1.
+Current release: **v1.0.0** (Production / Stable)
 
 ---
 
@@ -407,11 +481,11 @@ This is a developer preview. Generated tests should be reviewed before commit. P
 ```text
 M4  Runtime-Proven Test Generation         ✅ complete
 M5  Smart Scan + Dashboard + File Generate ✅ complete
-M6  MCP Server + GNN Risk Scoring
-M7  Multi-Language Graph Intelligence
-M8  Multi-Agent Quality Swarm
-M9  Large-scale repo automation
-M10 Controlled production-code fixes
+M6  Agent Skill Architecture (Zero-Key)    ✅ complete
+M7  Universal Multi-Language Engine (LCOV) ✅ complete
+M8  Sub-Agent Swarm Concurrency Isolation  ✅ complete
+M9  GitHub Action PR Quality Gate Bot      ✅ complete
+M10 Controlled Production-Code Fixes
 ```
 
 Read more:

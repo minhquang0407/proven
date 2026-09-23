@@ -43,11 +43,11 @@ class RuntimeCoverageResult:
 
 
 class RuntimeCoverageMapper:
-    def __init__(self, project, repo_path=None):
+    def __init__(self, project, repo_path=None, coverage_dir=None):
         self.project = project
         self.paths = get_project_paths(project)
         self.repo_path = os.path.abspath(repo_path or self._metadata_source_path() or os.getcwd())
-        self.coverage_dir = Path(self.paths['COVERAGE_WORK_DIR'])
+        self.coverage_dir = Path(coverage_dir or self.paths['COVERAGE_WORK_DIR'])
         self.coverage_dir.mkdir(parents=True, exist_ok=True)
         self.graph_path = self.paths['GRAPH_PATH']
         self.pyg_path = self.paths['PYG_DATA_PATH']

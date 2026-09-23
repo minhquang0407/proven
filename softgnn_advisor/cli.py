@@ -1856,6 +1856,103 @@ def simple_map(project, repo_path, pytest_args, mode, persist, max_tests):
         console.print(f"[yellow]{warning}[/yellow]")
     console.print(f"[bold green]Runtime edges:[/bold green] {len(result.runtime_edges)} | Persisted: {result.persisted}")
 
+@cli.group(name='agent')
+def agent_group():
+    """Agent-friendly commands for Coding Agents (Antigravity, Claude Code, Codex, Cursor)."""
+    pass
+
+
+@agent_group.command('scan')
+@click.option('--project', default=None, help='Project name (defaults to repository folder name)')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--base', default='main', show_default=True, help='Base git ref')
+@click.option('--head', default='HEAD', show_default=True, help='Head git ref')
+@click.option('--source', 'change_source', type=click.Choice(['auto', 'git', 'filesystem', 'full-scan']), default='auto', show_default=True)
+@click.option('--lang', default=None, help='Language override (python, typescript, go, etc.)')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON for agent parsing')
+def agent_scan(project, path, base, head, change_source, lang, as_json):
+    """Scan PR impact and list untested changed functions as structured JSON."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path, language=lang)
+    result = svc.scan(base=base, head=head, change_source=change_source, lang=lang)
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold cyan]Changed files:[/bold cyan] {len(result['changed_files'])}")
+        console.print(f"[bold yellow]Missing coverage gaps:[/bold yellow] {len(result['missing_coverage'])}")
+
+
+@agent_group.command('context')
+@click.option('--target', required=True, help='Target function ID, e.g. FUNC:foo')
+@click.option('--file', 'source_file', default=None, help='Source file if known')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--lang', default=None, help='Language override')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_context(target, source_file, project, path, lang, as_json):
+    """Extract AST code, callers, callees, and test suggestions for a target function."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path, language=lang)
+    result = svc.get_context(target_id=target, source_file=source_file, lang=lang)
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold cyan]Target:[/bold cyan] {result.get('target_id')}")
+        console.print(f"[bold green]Signature:[/bold green] {result.get('signature')}")
+
+
+@agent_group.command('verify-proof')
+@click.option('--target', required=True, help='Target function ID, e.g. FUNC:foo')
+@click.option('--test', 'test_target', default=None, help='Test file or function, e.g. tests/test_foo.py')
+@click.option('--pytest-args', default=None, help='Additional arguments for pytest (Track 1)')
+@click.option('--lcov', 'lcov_path', default=None, help='Path to lcov.info or coverage.out (Track 2 Universal)')
+@click.option('--test-cmd', default=None, help='Custom test execution command (e.g. npm test -- --coverage)')
+@click.option('--lang', default=None, help='Language override')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_verify_proof(target, test_target, pytest_args, lcov_path, test_cmd, lang, project, path, as_json):
+    """Verify runtime execution proof for a written test against the target function."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path, language=lang)
+    result = svc.verify_proof(
+        target_id=target,
+        test_target=test_target,
+        pytest_args=pytest_args,
+        lcov_path=lcov_path,
+        test_cmd=test_cmd,
+        lang=lang,
+    )
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        status_color = 'green' if result.get('proof_status') == 'pass' else 'red'
+        console.print(f"[{status_color}]{result.get('message')}[/{status_color}]")
+
+
+@agent_group.command('refresh')
+@click.option('--pytest-args', default='tests', show_default=True, help='Pytest target to refresh')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_refresh(pytest_args, project, path, as_json):
+    """Re-run pytest coverage across repository and persist updated runtime edges."""
+    import json
+    from softgnn_advisor.core.agent_service import AgentService
+
+    svc = AgentService(project=project, repo_path=path)
+    result = svc.refresh_runtime(pytest_args=pytest_args)
+    if as_json:
+        click.echo(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold green]Runtime edges count:[/bold green] {result.get('runtime_edges_count')}")
+
 
 if __name__ == '__main__':
     cli()
