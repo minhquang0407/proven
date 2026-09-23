@@ -79,3 +79,26 @@ When a test fails the Proof Gate (0% lines executed or stopped at a guard clause
 3. `CALLER_EARLY_BRANCH`: The test called a caller function (e.g. `checkout()`), but the caller exited before reaching `target()`. **Fix**: Provide mock data to the caller to reach the call site.
 4. `NEVER_CALLED`: The target function was never referenced in the test file. **Fix**: Import and call the target directly.
 5. `INPUT_GUARD_DETECTED`: 0% executed, but input validation was identified at the top of the function. **Fix**: Prepare valid mock parameters matching the function signature.
+
+---
+
+## Targeted Micro-Mutation Proof Gate (PRO Titanium Grade)
+
+To prevent the **Weak Assertion Trap** (`assert res is not None`), SoftGNN PRO injects surgical AST mutations into the target function and runs the test suite against each mutant:
+
+```bash
+python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
+  --target "FUNC:<target_name>" \
+  --test "tests/test_<module>.py" \
+  --mutation-check
+```
+
+### Mutators Applied:
+- **Comparison Inversion**: `>` $\leftrightarrow$ `<=`, `<` $\leftrightarrow$ `>=`, `==` $\leftrightarrow$ `!=`, `is` $\leftrightarrow$ `is not`.
+- **Arithmetic Flips**: `+` $\leftrightarrow$ `-`, `*` $\leftrightarrow$ `//`.
+- **Boolean Negation**: `True` $\leftrightarrow$ `False`.
+
+### Proof Grades:
+- 🛡️ **TITANIUM PROOF**: 100% of mutants were **KILLED** (`mutants_survived == 0`). Every injected bug was caught by assertions.
+- ⚠️ **SILVER PROOF (Weak Assertion Detected)**: One or more mutants **SURVIVED**. The test passed even though the target function was broken! The Agent must add specific value assertions to kill the survived mutants.
+
