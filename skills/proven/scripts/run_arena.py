@@ -22,6 +22,8 @@ SCHEMA = {
     "type": "object",
     "properties": {
         "round_no": {"type": "integer"},
+        "max_rounds": {"type": "integer"},
+        "verdict": {"type": "string", "enum": ["TITANIUM_VICTORY", "CONTINUE", "MAX_ROUNDS_EXHAUSTED", "STAGNATION_DETECTED"]},
         "target_id": {"type": "string"},
         "test_target": {"type": "string"},
         "proof_status": {"type": "string", "enum": ["pass", "fail"]},
@@ -30,11 +32,14 @@ SCHEMA = {
         "vault_status": {"type": "string"},
         "mutants_killed": {"type": "integer"},
         "mutants_survived": {"type": "integer"},
+        "surviving_mutant_desc": {"type": ["string", "null"]},
         "causal_reflexion": {"type": ["object", "null"]},
         "reflexion_prompt": {"type": ["string", "null"]},
+        "crystallized_lesson": {"type": ["object", "null"]},
+        "recorded_vulnerability": {"type": ["object", "null"]},
         "message": {"type": "string"}
     },
-    "required": ["round_no", "target_id", "test_target", "proof_grade", "is_titanium", "message"]
+    "required": ["round_no", "target_id", "test_target", "proof_grade", "is_titanium", "verdict", "message"]
 }
 
 
@@ -43,6 +48,9 @@ def main():
     parser.add_argument("--target", default=None, help="Target ID (e.g. FUNC:my_func)")
     parser.add_argument("--test", default=None, help="Path to test file (e.g. tests/test_my_func.py)")
     parser.add_argument("--round", type=int, default=1, help="Round number (default: 1)")
+    parser.add_argument("--max-rounds", type=int, default=3, help="Max adversarial rounds budget (default: 3)")
+    parser.add_argument("--previous-mutant", default=None, help="Previously survived mutant for stagnation detection")
+    parser.add_argument("--brief", choices=["author", "adversary"], default=None, help="Get brief for Author or Adversary agent")
     parser.add_argument("--project", default=None, help="Project name")
     parser.add_argument("--path", default=".", help="Repository path")
     parser.add_argument("--pytest-args", default=None, help="Extra pytest arguments")
@@ -53,15 +61,32 @@ def main():
         print(json.dumps(SCHEMA, indent=2))
         sys.exit(0)
 
-    if not args.target or not args.test:
-        parser.error("--target and --test are required unless --schema is specified")
+    if not args.target:
+        parser.error("--target is required unless --schema is specified")
 
     try:
         arena = TriAgentArena(repo_path=args.path, project_name=args.project)
+
+        if args.brief == "author":
+            brief = arena.get_author_brief(target_id=args.target)
+            print(json.dumps(brief, indent=2, ensure_ascii=False))
+            sys.exit(0)
+        elif args.brief == "adversary":
+            if not args.test:
+                parser.error("--test is required when requesting adversary brief")
+            brief = arena.get_adversary_brief(target_id=args.target, test_target=args.test)
+            print(json.dumps(brief, indent=2, ensure_ascii=False))
+            sys.exit(0)
+
+        if not args.test:
+            parser.error("--test is required when running referee round")
+
         result = arena.referee_round(
             target_id=args.target,
             test_target=args.test,
             round_no=args.round,
+            max_rounds=args.max_rounds,
+            previous_survived_mutant=args.previous_mutant,
             pytest_args=args.pytest_args,
         )
         print(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))

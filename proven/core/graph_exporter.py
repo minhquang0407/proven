@@ -24,7 +24,15 @@ def _node_type_from_id(node_id, fallback='Unknown'):
     text = str(node_id)
     if ':' in text:
         prefix = text.split(':', 1)[0]
-        mapping = {'FILE': 'File', 'CLASS': 'Class', 'FUNC': 'Function', 'TEST': 'TestFunction'}
+        mapping = {
+            'FILE': 'File',
+            'CLASS': 'Class',
+            'FUNC': 'Function',
+            'TEST': 'TestFunction',
+            'AXIOM': 'Axiom',
+            'LESSON': 'Lesson',
+            'VULNERABILITY': 'Vulnerability',
+        }
         return mapping.get(prefix, prefix.title())
     return fallback
 
@@ -109,6 +117,35 @@ def _apply_coverage(paths, nodes, edges):
             edges.append({'source': test, 'target': target, 'type': 'runtime-covers'})
 
 
+def _apply_memory(paths, nodes, edges, project):
+    from proven.core.memory_manager import GraphMemoryManager
+    repo_path = paths.get('REPO_PATH', '.')
+    mem_graph = GraphMemoryManager.export_memory_graph(repo_path=repo_path, project_name=project)
+    for mnode in mem_graph.get('nodes', []):
+        nid = mnode.get('id')
+        if not nid:
+            continue
+        ntype = mnode.get('type', 'Memory').title()
+        label = mnode.get('label') or mnode.get('rule') or mnode.get('surviving_mutant') or _label(nid)
+        if len(str(label)) > 35:
+            label = str(label)[:32] + "..."
+        nodes[nid] = {
+            'id': nid,
+            'label': label,
+            'type': ntype,
+            'source_file': '',
+            'coverage': 'memory',
+            'status': mnode.get('status', 'active'),
+            'rule': mnode.get('rule', ''),
+        }
+    for medge in mem_graph.get('edges', []):
+        s = medge.get('source')
+        t = medge.get('target')
+        etype = medge.get('type', 'linked').lower().replace('_', '-')
+        if s and t:
+            edges.append({'source': s, 'target': t, 'type': etype})
+
+
 def _slice(nodes, edges, focus=None, target=None, depth=1, max_nodes=500):
     focus = _norm(focus)
     start = set()
@@ -147,6 +184,7 @@ def export_graph(project, focus=None, target=None, depth=1, max_nodes=500):
     nodes = _load_nodes(paths)
     edges = _load_graph_edges(paths, nodes)
     _apply_coverage(paths, nodes, edges)
+    _apply_memory(paths, nodes, edges, project)
     keep = _slice(nodes, edges, focus=focus, target=target, depth=max(0, int(depth or 0)), max_nodes=max_nodes)
     visible_nodes = [nodes[node_id] for node_id in keep if node_id in nodes]
     visible_edges = [e for e in edges if e.get('source') in keep and e.get('target') in keep and not e.get('source', '').startswith('__error__')]
@@ -162,6 +200,9 @@ def export_graph(project, focus=None, target=None, depth=1, max_nodes=500):
             'classes': counts.get('Class', 0),
             'functions': counts.get('Function', 0),
             'tests': counts.get('TestFunction', 0) + counts.get('Test', 0),
+            'axioms': counts.get('Axiom', 0),
+            'lessons': counts.get('Lesson', 0),
+            'vulnerabilities': counts.get('Vulnerability', 0),
             'runtime_edges': sum(1 for e in visible_edges if e.get('type') == 'runtime-covers'),
         },
         'nodes': visible_nodes,

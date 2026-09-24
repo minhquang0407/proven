@@ -7,7 +7,7 @@
 **Adversarial Tri-Agent Co-Evolution · Causal Reflexion Engine · Topological Memory · Titanium Mutation Gate**
 
 [![Release](https://img.shields.io/github/v/tag/minhquang0407/softgnn-advisor?label=release&color=blue)](https://github.com/minhquang0407/softgnn-advisor/releases)
-[![Tests](https://img.shields.io/badge/tests-92%2F92%20passed-brightgreen.svg)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-104%2F104%20passed-brightgreen.svg)](#test-suite)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Action](https://img.shields.io/badge/GitHub%20Action-Marketplace-2088FF?logo=github-actions&logoColor=white)](#mode-c-github-action-cicd-quality-gate)
@@ -320,7 +320,7 @@ Proven is verified across a comprehensive test suite covering AST parsing, runti
 
 ```bash
 pytest
-# ======================= 92 passed in 105s =======================
+# ======================= 104 passed in 78s =======================
 ```
 
 ---
