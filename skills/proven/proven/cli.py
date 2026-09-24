@@ -1816,6 +1816,87 @@ def agent_train(project, path, as_json):
         console.print(f"[{status_color}]{result.get('message')}[/{status_color}]")
 
 
+@agent_group.command('arena')
+@click.option('--target', required=True, help='Target function ID, e.g. FUNC:foo')
+@click.option('--test', 'test_target', required=True, help='Path to test file, e.g. tests/test_foo.py')
+@click.option('--round', 'round_no', default=1, show_default=True, help='Round number')
+@click.option('--pytest-args', default=None, help='Additional pytest arguments')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=True, help='Output as JSON')
+def agent_arena(target, test_target, round_no, pytest_args, project, path, as_json):
+    """Referee an adversarial round between Author and Adversary Agents."""
+    from proven.core.swarm.arena import TriAgentArena
+    arena = TriAgentArena(repo_path=path, project_name=project)
+    result = arena.referee_round(target_id=target, test_target=test_target, round_no=round_no, pytest_args=pytest_args)
+    if as_json:
+        click.echo(json.dumps(result.to_dict(), indent=2, ensure_ascii=False))
+    else:
+        status_color = 'green' if result.is_titanium else 'yellow'
+        console.print(f"[{status_color}]{result.message}[/{status_color}]")
+
+
+@cli.command('arena')
+@click.option('--target', required=True, help='Target function ID, e.g. FUNC:foo')
+@click.option('--test', 'test_target', required=True, help='Path to test file, e.g. tests/test_foo.py')
+@click.option('--round', 'round_no', default=1, show_default=True, help='Round number')
+@click.option('--pytest-args', default=None, help='Additional pytest arguments')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+def cli_arena(target, test_target, round_no, pytest_args, project, path):
+    """Referee an adversarial round between Author and Adversary in the terminal."""
+    from proven.core.swarm.arena import TriAgentArena
+    arena = TriAgentArena(repo_path=path, project_name=project)
+    result = arena.referee_round(target_id=target, test_target=test_target, round_no=round_no, pytest_args=pytest_args)
+    status_color = 'bold green' if result.is_titanium else 'bold yellow'
+    console.print(f"[{status_color}]{result.message}[/{status_color}]")
+    if result.reflexion_prompt:
+        console.print("\n[bold cyan]Critic Reflexion Prompt:[/bold cyan]")
+        console.print(result.reflexion_prompt)
+
+
+@cli.group(name='memory')
+def memory_group():
+    """Manage topological graph-pinned memory and sleep consolidation."""
+    pass
+
+
+@memory_group.command('list')
+@click.option('--target', default=None, help='Filter by target function ID')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
+def memory_list(target, path, as_json):
+    """List pinned lessons stored on graph nodes."""
+    import json
+    from proven.core.memory_manager import GraphMemoryManager
+    lessons = GraphMemoryManager.get_pinned_lessons(target_id=target, repo_path=path) if target else []
+    if not target:
+        raw = GraphMemoryManager._load_raw_memory(repo_path=path)
+        for t, les in raw.items():
+            lessons.extend(les)
+    if as_json:
+        click.echo(json.dumps(lessons, indent=2, ensure_ascii=False))
+    else:
+        console.print(f"[bold cyan]Pinned Lessons Count:[/bold cyan] {len(lessons)}")
+        for item in lessons:
+            console.print(f"- [bold green]{item.get('target_id')}[/bold green]: {item.get('lesson')} ({item.get('failure_mode')})")
+
+
+@memory_group.command('consolidate')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--project', default=None, help='Project name')
+@click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
+def memory_consolidate(path, project, as_json):
+    """Run Sleep Consolidation to synthesize pinned lessons into .proven/axioms.md."""
+    import json
+    from proven.core.memory_manager import GraphMemoryManager
+    res = GraphMemoryManager.consolidate_axioms(repo_path=path, project_name=project)
+    if as_json:
+        click.echo(json.dumps(res, indent=2, ensure_ascii=False))
+    else:
+        status_color = 'green' if res.get('status') == 'success' else 'yellow'
+        console.print(f"[{status_color}]{res.get('message')}[/{status_color}]")
+
 
 if __name__ == '__main__':
     cli()

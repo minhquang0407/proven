@@ -170,3 +170,58 @@ Triggers full-batch Heterogeneous Graph Transformer (HGT) link prediction traini
 ### CLI Arguments
 - `--project <name>`: Project name override.
 - `--schema`: Output JSON schema and exit.
+
+---
+
+## 8. run_arena.py
+
+Coordinates the Tri-Agent Adversarial Arena round, preparing briefs for Author (Blue) and Adversary (Red), running mutation checks, and synthesizing causal reflexion.
+
+### CLI Arguments
+- `--target <target_id>`: Target identifier (e.g. `FUNC:process_payment`) [Required].
+- `--test <path>`: Authored test file path.
+- `--round <int>`: Current game round number (default: `1`).
+- `--mutation-check`: Run MicroMutationGate and vault regression.
+- `--schema`: Output JSON schema and exit.
+
+### Output JSON Example
+```json
+{
+  "target_id": "FUNC:process_payment",
+  "round": 1,
+  "verdict": "CONTINUE",
+  "mutation_check": true,
+  "author_brief": {
+    "target_id": "FUNC:process_payment",
+    "instructions": "Synthesize or strengthen tests for FUNC:process_payment.",
+    "scoped_axioms": ["Assert side effects on state before returning."]
+  },
+  "adversary_brief": {
+    "target_id": "FUNC:process_payment",
+    "instructions": "Inspect tests and inject subtle semantic mutants to bypass assertions."
+  },
+  "reflexion": {
+    "failure_type": "WEAK_ASSERTION",
+    "prompt": "### Reflexion on Target `FUNC:process_payment`..."
+  }
+}
+```
+
+---
+
+## 9. consolidate_memory.py
+
+Consolidates graph-pinned episodic lessons into repository-wide axioms (`.proven/axioms.md`) via Sleep Consolidation.
+
+### CLI Arguments
+- `--schema`: Output JSON schema and exit.
+
+### Output JSON Example
+```json
+{
+  "status": "success",
+  "consolidated_axioms": 3,
+  "axioms_file": ".proven/axioms.md"
+}
+```
+

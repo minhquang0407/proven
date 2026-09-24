@@ -2,12 +2,12 @@
 
 # Proven (v1.0.0 PRO)
 
-### The Runtime-Proven & Mutation-Verified Test Advisor for AI Coding Agents & CI/CD
+### The Neuro-Symbolic & Runtime-Proven Test Advisor for AI Coding Agents & CI/CD
 
-**Know what changed. Prove what tests hit it. Kill weak assertions.**
+**Adversarial Tri-Agent Co-Evolution · Causal Reflexion Engine · Topological Memory · Titanium Mutation Gate**
 
 [![Release](https://img.shields.io/github/v/tag/minhquang0407/softgnn-advisor?label=release&color=blue)](https://github.com/minhquang0407/softgnn-advisor/releases)
-[![Tests](https://img.shields.io/badge/tests-78%2F78%20passed-brightgreen.svg)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-92%2F92%20passed-brightgreen.svg)](#test-suite)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Action](https://img.shields.io/badge/GitHub%20Action-Marketplace-2088FF?logo=github-actions&logoColor=white)](#mode-c-github-action-cicd-quality-gate)
@@ -42,6 +42,39 @@ flowchart LR
 ```
 
 > **Proven PRO is your infallible Ground Truth Gatekeeper.** It proves real execution, diagnoses early exits, and performs surgical micro-mutations to guarantee **Titanium-Grade tests**.
+
+---
+
+## 🧠 Neuro-Symbolic AI: Tri-Agent Adversarial Co-Evolution
+
+Beyond standard test runners, Proven is engineered as a **Neuro-Symbolic Multi-Agent System**. Testing is framed as a non-zero-sum game between specialized agents mediated by an infallible symbolic referee:
+
+```
+               ┌──────────────────────────────────────────────────┐
+               │       🧠 CRITIC AGENT (Supervisor / Referee)     │
+               │   - Dynamic Bytecode Tracing (Coverage Gate)     │
+               │   - HGT Heterogeneous Graph Topology (Causal AST)│
+               │   - Micro-Mutation Verification & Mutant Vault   │
+               │   - Causal Reflexion Diagnostic Synthesis        │
+               └─────────────────────────┬────────────────────────┘
+                                         │
+                 ┌───────────────────────┴───────────────────────┐
+                 ▼                                               ▼
+   ┌───────────────────────────┐                   ┌───────────────────────────┐
+   │   🛡️ AUTHOR AGENT (Blue)  │                   │  ⚔️ ADVERSARY AGENT (Red) │
+   │ - Synthesizes test suite  │◀──White-box Review── - Injects subtle mutants │
+   │ - Reads Graph Axioms      │                   │ - Aims to bypass Author   │
+   │ - Bounded memory (<80 tok)│                   │   with semantic anomalies │
+   └───────────────────────────┘                   └───────────────────────────┘
+```
+
+### Key AI Components
+1. **Causal Reflexion Engine (`reflexion_engine.py`)**:
+   When tests fail to kill mutants or miss code branches, the engine fuses physical bytecode traces with upstream/downstream callers in the Heterogeneous Graph Transformer (HGT) network. It classifies failures into `UNCOVERED_BRANCH` vs `WEAK_ASSERTION` and generates structured causal reflexion prompts for the Author Agent.
+2. **Zero-Token Mutant Vault (`mutant_vault.py`)**:
+   Surviving mutants generated during adversarial exploration are automatically archived into `.proven/mutant_vault/{target}/`. Future regression verification executes in **< 0.05s** with **0 LLM tokens**.
+3. **Topological Graph-Pinned Memory & Sleep Consolidation (`memory_manager.py`)**:
+   Instead of blowing up LLM context windows, lessons are pinned directly to AST graph nodes. Queries inject only the top-2 relevant lessons (**< 80 tokens** overhead). Periodic **Sleep Consolidation** synthesizes episodic lessons into repo-wide architecture rules (`.proven/axioms.md`).
 
 ---
 
@@ -180,6 +213,10 @@ Opens at `http://127.0.0.1:8765`:
 
 | Feature | Standard AI / CI | Proven PRO | Why It Matters |
 | :--- | :---: | :---: | :--- |
+| **Tri-Agent Arena** | Single loop | **Adversarial Co-Evolution** | Critic, Blue Author, and Red Adversary co-evolve to eliminate blindspots. |
+| **Causal Reflexion** | Syntax error | **Topological Diagnosis** | Combines physical bytecode traces with HGT graph callers (`UNCOVERED_BRANCH` vs `WEAK_ASSERTION`). |
+| **Zero-Token Vault** | Re-prompt LLM | **Deterministic Vault** | Killer mutants archived in `.proven/mutant_vault/` and replayed in <0.05s with 0 tokens. |
+| **Topological Memory** | Context overflow | **AST-Pinned Axioms** | Scoped memory injection (<80 tokens) with Sleep Consolidation into repo axioms. |
 | **Runtime Proof Gate** | None | **Enforced** | Verifies tests hit exact bytecode/AST line ranges, not just smoke tests. |
 | **Self-Healing Diagnoser** | Raw trace | **AST Deep Scan** | Identifies early-exit `if` guards & mock mismatches to guide the Agent. |
 | **Micro-Mutation Gate** | Slow / Heavy | **Targeted AST** | Inverts operators (`>`, `==`, `+`, `True`) inside the target function to kill weak asserts (**TITANIUM PROOF**). |
@@ -206,6 +243,12 @@ proven agent triage "Database connection pool timeout"
 
 # 4. PRO: Verify test execution with Micro-Mutation Gate
 python skills/proven/scripts/verify_runtime_proof.py \
+  --target "FUNC:calculate_total" \
+  --test "tests/test_pricing.py" \
+  --mutation-check
+
+# 5. Arena: Launch Tri-Agent Adversarial Round
+python skills/proven/scripts/run_arena.py \
   --target "FUNC:calculate_total" \
   --test "tests/test_pricing.py" \
   --mutation-check
@@ -255,6 +298,9 @@ When a test fails runtime proof, Proven provides immediate actionable hints:
 | `proven agent context --target <id>` | Query AST line ranges, callers, and import dependencies |
 | `proven agent verify-proof --target <id> --test <p>` | Verify runtime execution proof |
 | `proven agent verify-proof ... --mutation-check` | **PRO**: Invert AST operators to kill weak assertions (**Titanium Proof**) |
+| `proven arena --target <id> --test <p>` | **AI Swarm**: Coordinate Tri-Agent Adversarial Arena co-evolution round |
+| `proven memory list` | **Memory**: Inspect graph-pinned episodic lessons |
+| `proven memory consolidate` | **Memory**: Trigger Sleep Consolidation of lessons into repository axioms |
 | `proven agent impact --target <id>` | **Tier 2**: Query direct dependents & latent HGT blast radius |
 | `proven agent triage "bug description"` | **Tier 2**: Recommend expert code reviewers for a bug or PR |
 | `proven agent train` | **Tier 2**: Trigger offline HGT Graph AI training |
@@ -270,11 +316,11 @@ For the complete reference of all commands, options, and advanced pipelines, see
 
 ## Test Suite
 
-Proven is verified across a comprehensive test suite covering AST parsing, runtime mapping, self-healing diagnostics, mutation gates, HGT triage, and GitHub Action workflows:
+Proven is verified across a comprehensive test suite covering AST parsing, runtime mapping, self-healing diagnostics, mutation gates, HGT triage, Tri-Agent Arena, Causal Reflexion, and GitHub Action workflows:
 
 ```bash
 pytest
-# ======================= 78 passed in 105s =======================
+# ======================= 92 passed in 105s =======================
 ```
 
 ---

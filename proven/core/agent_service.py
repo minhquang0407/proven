@@ -20,7 +20,10 @@ from proven.infrastructure.pipelines.runtime_coverage_mapper import RuntimeCover
 from proven.infrastructure.pipelines.universal_ast_parser import UniversalASTParser
 from proven.infrastructure.pipelines.universal_coverage_mapper import UniversalCoverageMapper
 from proven.core.branch_diagnoser import BranchDiagnoser
+from proven.core.memory_manager import GraphMemoryManager
 from proven.core.mutation_gate import MicroMutationGate
+from proven.core.mutant_vault import MutantVault
+from proven.core.reflexion_engine import CausalReflexionEngine
 from proven.scripts.etl_run import run_etl_pipeline
 
 
@@ -250,6 +253,12 @@ class AgentService:
                 'suggested_test_file': suggested_test_file,
                 'existing_test_file_exists': bool(existing_test_content),
                 'existing_test_preview': existing_test_content[:2000] if existing_test_content else None,
+                'repo_memory': GraphMemoryManager.get_scoped_memory_prompt(
+                    target_id=target_id, repo_path=self.repo_path, project_name=self.project
+                ) or None,
+                'pinned_lessons': GraphMemoryManager.get_pinned_lessons(
+                    target_id, repo_path=self.repo_path, project_name=self.project
+                ),
             }
 
         # --- Track 2: Universal AST Parser ---
@@ -275,6 +284,12 @@ class AgentService:
             'suggested_test_file': suggested_test_file,
             'existing_test_file_exists': bool(existing_test_content),
             'existing_test_preview': existing_test_content[:2000] if existing_test_content else None,
+            'repo_memory': GraphMemoryManager.get_scoped_memory_prompt(
+                target_id=target_id, repo_path=self.repo_path, project_name=self.project
+            ) or None,
+            'pinned_lessons': GraphMemoryManager.get_pinned_lessons(
+                target_id, repo_path=self.repo_path, project_name=self.project
+            ),
         }
 
     def verify_proof(
@@ -401,6 +416,71 @@ class AgentService:
                         pytest_args=pytest_args,
                     )
                     proof_grade = mutation_res.get("proof_grade", "SILVER")
+
+                    # Check for surviving mutants -> Synthesize Causal Reflexion & store in Vault
+                    survived_mutants = [d for d in mutation_res.get("details", []) if d.get("status") == "survived"]
+                    if survived_mutants:
+                        first_s = survived_mutants[0]
+                        graph_repo = None
+                        try:
+                            from proven.infrastructure.repositories.graph_repo import GraphRepository
+                            graph_repo = GraphRepository(self.paths["GRAPH_PATH"])
+                            graph_repo.load_graph()
+                        except Exception:
+                            graph_repo = None
+
+                        reflexion = CausalReflexionEngine.diagnose(
+                            target_id=target_id,
+                            mutant_info=first_s,
+                            covered_lines=best.covered_lines,
+                            repo_path=self.repo_path,
+                            graph_repo=graph_repo,
+                        )
+                        mutation_res["causal_reflexion"] = reflexion.to_dict()
+                        if diag is None:
+                            diag = {}
+                        diag["reflexion_prompt"] = reflexion.reflexion_prompt
+
+                        try:
+                            MutantVault.store_mutant(
+                                target_id=target_id,
+                                source_file=s_file,
+                                line=first_s.get("line", 1),
+                                mutation_desc=first_s.get("mutation", ""),
+                                original_code=first_s.get("original_code", ""),
+                                mutated_code=first_s.get("mutated_code") or first_s.get("original_code", ""),
+                                defeated_test=short_test,
+                                repo_path=self.repo_path,
+                                project_name=self.project,
+                            )
+                            GraphMemoryManager.pin_lesson(
+                                target_id=target_id,
+                                lesson=reflexion.actionable_directive,
+                                failure_mode=reflexion.failure_mode,
+                                mutant_desc=first_s.get("mutation", ""),
+                                repo_path=self.repo_path,
+                                project_name=self.project,
+                            )
+                        except Exception:
+                            pass
+                    else:
+                        # If micro-mutations all passed, run zero-token vault regression for historical security
+                        try:
+                            vault_res = MutantVault.run_vault_regression(
+                                target_id=target_id,
+                                test_target=test_target,
+                                repo_path=self.repo_path,
+                                project_name=self.project,
+                                pytest_args=pytest_args,
+                            )
+                            mutation_res["vault_regression"] = vault_res
+                            if vault_res.get("status") == "regression_detected":
+                                proof_grade = "SILVER"
+                                mutation_res["proof_grade"] = "SILVER"
+                                msg += f"\nVAULT REGRESSION: {vault_res.get('message')}"
+                        except Exception:
+                            pass
+
                     if mutation_res.get("message"):
                         msg += f"\n{mutation_res['message']}"
 

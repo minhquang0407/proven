@@ -34,6 +34,7 @@ To preserve context window efficiency, detailed guides are organized into on-dem
 | Trigger / Situation | Read Reference | Purpose |
 | :--- | :--- | :--- |
 | CLI specs, input flags & JSON schemas | [`references/scripts_api_reference.md`](references/scripts_api_reference.md) | Black-box schemas for all standalone scripts (use `--schema`). |
+| Multi-agent co-evolution & arena | [`references/tri_agent_arena.md`](references/tri_agent_arena.md) | Tri-Agent Adversarial Arena (Critic, Author, Adversary roles). |
 | Test failed Runtime Proof or Mutation | [`references/proof_gate_guide.md`](references/proof_gate_guide.md) | Branch diagnosis codes (`EARLY_BRANCH`, `MOCKED_OUT`) & mutant kill strategies. |
 | User asks for Blast Radius or Reviewer | [`references/tier2_guide.md`](references/tier2_guide.md) | Latent GNN risk prediction, Bug Triage scoring, and offline HGT training. |
 | Non-Python project (TS, Go, Rust, Java) | [`references/universal_lcov_guide.md`](references/universal_lcov_guide.md) | LCOV file mapping, test command flags, and polyglot setup. |
@@ -114,9 +115,48 @@ python skills/proven/scripts/refresh_runtime_map.py --tests "tests/test_<module>
 
 ---
 
+## Tri-Agent Adversarial Arena (Neuro-Symbolic Co-Evolution)
+
+For safety-critical functions, invoke the **Tri-Agent Arena** where agents co-evolve via game-theoretic adversarial rounds:
+
+```
+               ┌──────────────────────────────────────────────────┐
+               │       🧠 CRITIC AGENT (Supervisor / Referee)     │
+               │   - Runs Bytecode Tracing & HGT Graph Topology   │
+               │   - Synthesizes Causal Reflexion Diagnosis       │
+               │   - Verifies Zero-Token Mutant Vault Regression   │
+               └─────────────────────────┬────────────────────────┘
+                                         │
+                 ┌───────────────────────┴───────────────────────┐
+                 ▼                                               ▼
+   ┌───────────────────────────┐                   ┌───────────────────────────┐
+   │   🛡️ AUTHOR AGENT (Blue)  │                   │  ⚔️ ADVERSARY AGENT (Red) │
+   │ - Synthesizes test suite  │◀──White-box Review── - Injects subtle mutants │
+   │ - Reads Graph Axioms      │                   │ - Aims to bypass Author   │
+   └───────────────────────────┘                   └───────────────────────────┘
+```
+
+### Tri-Agent Personas & Scripts
+1. **Critic Agent (Supervisor)**: Orchestrates the rounds.
+   ```bash
+   python skills/proven/scripts/run_arena.py --target "FUNC:<target_name>" --test "tests/test_<mod>.py"
+   ```
+2. **Author Agent (Blue Team)**: Uses [`skills/proven/agents/author_agent.md`](agents/author_agent.md) to author and repair tests guided by scoped topological memory.
+3. **Adversary Agent (Red Team)**: Uses [`skills/proven/agents/adversary_agent.md`](agents/adversary_agent.md) to analyze tests and craft semantic boundary mutations.
+
+### Causal Reflexion & Topological Memory
+- **Causal Reflexion Engine**: Classifies failures into `UNCOVERED_BRANCH` (bytecode miss) vs `WEAK_ASSERTION` (bytecode hit, mutant survived) and traces causal impact through HGT caller graphs.
+- **Zero-Token Mutant Vault**: Killer mutants are stored in `.proven/mutant_vault/{target}/` and validated in sub-0.05s with **0 LLM tokens**.
+- **Sleep Consolidation**: Periodically consolidate episodic memory into repository axioms:
+  ```bash
+  python skills/proven/scripts/consolidate_memory.py
+  ```
+
+---
+
 ## Sub-Agent Swarms & Tier 2 Intelligence
 
 - **Parallel Fan-Out**: Run `python skills/proven/scripts/scan_impact.py --fan-out`. Process-isolated temporary sessions guarantee zero `.coverage` collisions across concurrent sub-agents.
 - **Latent Blast Radius**: Run `python skills/proven/scripts/query_impact.py --target "FUNC:<id>" --mode hybrid`.
 - **Reviewer Triage**: Run `python skills/proven/scripts/triage_expert.py --query "PR or bug description"`.
-*(Detailed guides in [`references/tier2_guide.md`](references/tier2_guide.md)).*
+*(Detailed guides in [`references/tier2_guide.md`](references/tier2_guide.md) and [`references/tri_agent_arena.md`](references/tri_agent_arena.md)).*
