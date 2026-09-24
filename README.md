@@ -4,10 +4,10 @@
 
 ### The Neuro-Symbolic & Runtime-Proven Test Advisor for AI Coding Agents & CI/CD
 
-**Adversarial Tri-Agent Co-Evolution · Causal Reflexion Engine · Topological Memory · Titanium Mutation Gate**
+**Adversarial Tri-Agent Co-Evolution · Code GraphRAG · Sleep Consolidation · Causal Reflexion · Titanium Gate**
 
 [![Release](https://img.shields.io/github/v/tag/minhquang0407/softgnn-advisor?label=release&color=blue)](https://github.com/minhquang0407/softgnn-advisor/releases)
-[![Tests](https://img.shields.io/badge/tests-104%2F104%20passed-brightgreen.svg)](#test-suite)
+[![Tests](https://img.shields.io/badge/tests-116%2F116%20passed-brightgreen.svg)](#test-suite)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Action](https://img.shields.io/badge/GitHub%20Action-Marketplace-2088FF?logo=github-actions&logoColor=white)](#mode-c-github-action-cicd-quality-gate)
@@ -73,9 +73,11 @@ Beyond standard test runners, Proven is engineered as a **Neuro-Symbolic Multi-A
    When tests fail to kill mutants or miss code branches, the engine fuses physical bytecode traces with upstream/downstream callers in the Heterogeneous Graph Transformer (HGT) network. It classifies failures into `UNCOVERED_BRANCH` vs `WEAK_ASSERTION` and generates structured causal reflexion prompts for the Author Agent.
 2. ⚡ **Zero-Token Mutant Vault (`mutant_vault.py`)**:
    Surviving mutants generated during adversarial exploration are automatically archived into `.proven/mutant_vault/{target}/`. Future regression verification executes in **< 0.05s** with **0 LLM tokens**.
-3. 🌐 **Topological Graph-Pinned Memory & Sleep Consolidation (`memory_manager.py`)**:
-   Instead of blowing up LLM context windows, lessons are pinned directly to AST graph nodes. Queries inject only the top-2 relevant lessons (**< 80 tokens** overhead). Periodic **Sleep Consolidation** synthesizes episodic lessons into repo-wide architecture rules (`.proven/axioms.md`).
-4. ⚔️ **Parallel Multi-Persona Red Team (`red_team.py`)**:
+3. 🌐 **Topological Memory & Sleep Consolidation (`memory_manager.py`)**:
+   Based on Complementary Learning Systems (CLS) neuroscience theory. Episodic lessons are pinned to AST graph nodes and injected with strict token bounds (< 80 tokens). When unconsolidated lessons reach threshold ($N \ge 10$) or post-battle triggers, the engine clusters failures into 4 semantic families and synthesizes repository-wide architectural axioms into `.proven/axioms.md`.
+4. 🕸️ **Code GraphRAG & Attention Explainability (`graph_rag.py`)**:
+   Replaces naive flat vector search with dual-track multi-hop topological attention (HGT multi-head attention + BFS Personalized PageRank fallback). Maps deep causal dependencies up to 3 hops, injects top-5 attended structural contexts (< 120 tokens) into agent prompts, and renders ASCII attention trees via `proven explain-attention --visualize`.
+5. ⚔️ **Parallel Multi-Persona Red Team (`red_team.py`)**:
    For safety-critical functions, Proven dispatches three parallel adversarial personas (`RedBoundaryAgent`, `RedStateAgent`, and `RedChaosAgent`) to exhaustively probe boundary logic, state mutations, and unhandled exception paths.
 
 ---
@@ -206,6 +208,7 @@ proven dashboard --project my-app --open
 
 Opens at `http://127.0.0.1:8765`:
 - **Interactive Cytoscape Graph**: Visually navigate functions, classes, and runtime test-to-code edges.
+- **Topological Attention Heatmap**: Highlights GraphRAG multi-hop attention weights with distinct visual styling (cyan target `#22d3ee`, amber path `#f59e0b`, and dynamic edge thickness) to instantly spot blast radius hotspots.
 - **Node Filtering & Search**: Filter by symbol type (`FUNC`, `CLASS`, `FILE`, `TEST`) or search by name.
 - **One-Click Actions**: Run Scans, trigger Runtime Mapping, and generate tests directly from the browser UI.
 
@@ -216,9 +219,10 @@ Opens at `http://127.0.0.1:8765`:
 | Feature | Standard AI / CI | Proven PRO | Why It Matters |
 | :--- | :---: | :---: | :--- |
 | 🧠 **Tri-Agent Arena** | Single loop | **Adversarial Co-Evolution** | Critic, Blue Author, and Red Adversary co-evolve to eliminate blindspots. |
+| 🕸️ **Code GraphRAG** | Flat text vector RAG | **Topological Attention** | HGT / BFS PageRank multi-hop message passing injects top attended context (<120 tokens) & ASCII flow trees. |
 | 🔍 **Causal Reflexion** | Syntax error | **Topological Diagnosis** | Combines physical bytecode traces with HGT graph callers (`UNCOVERED_BRANCH` vs `WEAK_ASSERTION`). |
 | ⚡ **Zero-Token Vault** | Re-prompt LLM | **Deterministic Vault** | Killer mutants archived in `.proven/mutant_vault/` and replayed in <0.05s with 0 tokens. |
-| 🌐 **Topological Memory** | Context overflow | **AST-Pinned Axioms** | Scoped memory injection (<80 tokens) with Sleep Consolidation into repo axioms. |
+| 🌐 **Topological Memory** | Context overflow | **AST-Pinned Axioms (CLS)** | Scoped memory injection (<80 tokens) with Sleep Consolidation ($N \ge 10$) into `.proven/axioms.md`. |
 | ⚔️ **Parallel Red Swarm** | Single attacker | **Multi-Persona Attack** | 3 specialized personas (Boundary, State, Chaos) run concurrently to uncover edge cases. |
 | 🛡️ **Runtime Proof Gate** | None | **Enforced** | Verifies tests hit exact bytecode/AST line ranges, not just smoke tests. |
 | 🩺 **Self-Healing Diagnoser** | Raw trace | **AST Deep Scan** | Identifies early-exit `if` guards & mock mismatches to guide the Agent. |
@@ -241,16 +245,22 @@ proven agent scan
 # 2. Query latent blast radius & downstream dependencies
 proven agent impact --target "FUNC:checkout" --mode hybrid
 
-# 3. Recommend expert reviewers or triage a bug
+# 3. Explain GraphRAG Attention: Visualize multi-hop topological attention tree
+proven explain-attention --target "FUNC:checkout" --visualize
+
+# 4. Sleep Consolidation: Synthesize accumulated lessons into repo-wide axioms
+proven sleep --threshold 10
+
+# 5. Recommend expert reviewers or triage a bug
 proven agent triage "Database connection pool timeout"
 
-# 4. PRO: Verify test execution with Micro-Mutation Gate
+# 6. PRO: Verify test execution with Micro-Mutation Gate
 python skills/proven/scripts/verify_runtime_proof.py \
   --target "FUNC:calculate_total" \
   --test "tests/test_pricing.py" \
   --mutation-check
 
-# 5. Arena: Launch Tri-Agent Adversarial Round
+# 7. Arena: Launch Tri-Agent Adversarial Round
 python skills/proven/scripts/run_arena.py \
   --target "FUNC:calculate_total" \
   --test "tests/test_pricing.py" \
@@ -299,6 +309,8 @@ When a test fails runtime proof, Proven provides immediate actionable hints:
 | :--- | :--- |
 | `proven agent scan` | Detect altered functions lacking runtime test proof |
 | `proven agent context --target <id>` | Query AST line ranges, callers, and import dependencies |
+| `proven explain-attention --target <id> --visualize` | **GraphRAG**: Query multi-hop topological attention & render ASCII tree |
+| `proven sleep [--threshold 10] [--force]` | **Memory**: Consolidate episodic memory into repository axioms (CLS Theory) |
 | `proven agent verify-proof --target <id> --test <p>` | Verify runtime execution proof |
 | `proven agent verify-proof ... --mutation-check` | **PRO**: Invert AST operators to kill weak assertions (**Titanium Proof**) |
 | `proven arena --target <id> --test <p>` | **AI Swarm**: Coordinate Tri-Agent Adversarial Arena co-evolution round |
@@ -319,11 +331,11 @@ For the complete reference of all commands, options, and advanced pipelines, see
 
 ## 🧪 Test Suite
 
-Proven is verified across a comprehensive test suite covering AST parsing, runtime mapping, self-healing diagnostics, mutation gates, HGT triage, Tri-Agent Arena, Causal Reflexion, and GitHub Action workflows:
+Proven is verified across a comprehensive test suite covering AST parsing, runtime mapping, self-healing diagnostics, mutation gates, HGT triage, Tri-Agent Arena, Causal Reflexion, Code GraphRAG, and GitHub Action workflows:
 
 ```bash
 pytest
-# ======================= 104 passed in 78s =======================
+# ======================= 116 passed in 139s =======================
 ```
 
 ---
