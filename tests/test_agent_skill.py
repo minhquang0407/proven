@@ -169,3 +169,39 @@ def test_calls_build_llm_provider():
     finally:
         if passing_test.exists():
             passing_test.unlink()
+
+
+def test_standalone_scripts_schema_flag(repo_root):
+    scripts = [
+        "scan_impact.py",
+        "get_target_context.py",
+        "verify_runtime_proof.py",
+        "refresh_runtime_map.py",
+        "query_impact.py",
+        "triage_expert.py",
+        "train_gnn.py",
+    ]
+    for script_name in scripts:
+        script_path = os.path.join(repo_root, "skills", "softgnn-advisor", "scripts", script_name)
+        proc = subprocess.run(
+            [sys.executable, script_path, "--schema"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        assert proc.returncode == 0, f"{script_name} --schema failed: {proc.stderr}"
+        schema = json.loads(proc.stdout)
+        assert "$schema" in schema
+        assert "title" in schema
+        assert schema.get("type") == "object"
+
+
+def test_agent_service_refresh_runtime_targeted(repo_root):
+    svc = AgentService(repo_path=repo_root)
+    res = svc.refresh_runtime(tests="tests/test_scan_fallback.py")
+    assert res["status"] == "success"
+    assert res["target_used"] == "tests/test_scan_fallback.py"
+    assert res["passed_tests"] > 0
+    assert "mode_used" in res
+

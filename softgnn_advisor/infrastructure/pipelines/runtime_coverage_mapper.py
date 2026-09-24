@@ -122,13 +122,29 @@ class RuntimeCoverageMapper:
     def _run_dynamic_context_coverage(self, pytest_args, warnings):
         cov_file = self.coverage_dir / '.coverage.dynamic'
         json_path = self.coverage_dir / 'coverage_dynamic.json'
-        rc_path = self.coverage_dir / '.coveragerc.dynamic'
-        rc_path.write_text('[run]\ndynamic_context = test_function\n', encoding='utf-8')
+        plugin_path = self.coverage_dir / '_softgnn_cov_plugin.py'
+        plugin_code = (
+            "def pytest_runtest_call(item):\n"
+            "    try:\n"
+            "        import coverage\n"
+            "        cov = coverage.Coverage.current()\n"
+            "        if cov:\n"
+            "            cov.switch_context(item.nodeid)\n"
+            "    except Exception:\n"
+            "        pass\n"
+        )
+        plugin_path.write_text(plugin_code, encoding='utf-8')
+
         env = os.environ.copy()
         env['COVERAGE_FILE'] = str(cov_file)
-        env['COVERAGE_RCFILE'] = str(rc_path)
+        env['PYTHONPATH'] = str(self.coverage_dir) + os.pathsep + env.get('PYTHONPATH', '')
+
         self._run([sys.executable, '-m', 'coverage', 'erase'], warnings, env=env, check=False)
-        run_cmd = [sys.executable, '-m', 'coverage', 'run', '-m', 'pytest'] + self._split_args(pytest_args)
+        run_cmd = [
+            sys.executable, '-m', 'coverage', 'run',
+            '-m', 'pytest',
+            '-p', '_softgnn_cov_plugin',
+        ] + self._split_args(pytest_args)
         self._run(run_cmd, warnings, env=env, check=False)
         self._run([sys.executable, '-m', 'coverage', 'json', '--show-contexts', '-o', str(json_path)], warnings, env=env, check=False)
         return self._parse_context_coverage(json_path)

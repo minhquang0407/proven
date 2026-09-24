@@ -571,14 +571,24 @@ class AgentService:
 
         return res
 
-    def refresh_runtime(self, pytest_args='tests', mode='per-test'):
-        """Re-run pytest coverage across repo and persist updated runtime edges."""
+    def refresh_runtime(self, tests=None, pytest_args=None, mode='auto'):
+        """Re-run pytest coverage across repo and persist updated runtime edges.
+
+        Priority:
+        1. tests: explicitly provided by Agent (e.g. tests/test_billing.py)
+        2. pytest_args: backwards compatibility argument
+        3. auto-discovery: testpaths in config, tests/, test/, or .
+        """
         self.ensure_initialized()
+        target = tests or pytest_args
+        if not target:
+            target = self._discover_test_path()
         mapper = RuntimeCoverageMapper(self.project, repo_path=self.repo_path)
-        res = mapper.map_runtime_coverage(pytest_args=pytest_args, mode=mode, persist=True)
+        res = mapper.map_runtime_coverage(pytest_args=target, mode=mode, persist=True)
         return {
             'status': 'success',
             'project': self.project,
+            'target_used': target,
             'mode_used': res.mode_used,
             'passed_tests': res.passed_tests,
             'failed_tests': res.failed_tests,
@@ -586,6 +596,27 @@ class AgentService:
             'persisted': res.persisted,
             'warnings': res.warnings,
         }
+
+    def _discover_test_path(self):
+        """Auto-detect test folder or fallback to '.'"""
+        pyproject = Path(self.repo_path) / 'pyproject.toml'
+        if pyproject.exists():
+            try:
+                content = pyproject.read_text(encoding='utf-8')
+                for line in content.splitlines():
+                    if 'testpaths' in line and '=' in line:
+                        parts = line.split('=', 1)[1].strip().strip('[]"')
+                        first_path = parts.split(',')[0].strip(' "\'')
+                        if (Path(self.repo_path) / first_path).exists():
+                            return first_path
+            except Exception:
+                pass
+
+        for folder in ['tests', 'test', 'src/tests', 'testing']:
+            if (Path(self.repo_path) / folder).is_dir():
+                return folder
+
+        return '.'
 
     def generate_fanout_tasks(self, base="main", head="HEAD", lang="auto") -> dict:
         """Generate structured parallel worker tasks for Sub-Agent Swarms / skill-to-workflow."""

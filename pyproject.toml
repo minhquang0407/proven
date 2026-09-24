@@ -68,3 +68,8 @@ include = ["softgnn_advisor*"]
 
 [tool.setuptools.package-data]
 "softgnn_advisor" = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [".git", ".venv", "skills", "build", "dist", "data"]
+
