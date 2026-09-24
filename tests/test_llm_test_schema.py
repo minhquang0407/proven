@@ -1,6 +1,6 @@
 ﻿import pytest
 
-from softgnn_advisor.core.llm_test_schema import LLMGeneratedTest, parse_generated_test, parse_repair_response, validate_generated_test
+from proven.core.llm_test_schema import LLMGeneratedTest, parse_generated_test, parse_repair_response, validate_generated_test
 
 
 def test_validate_generated_test_accepts_safe_pytest_code():

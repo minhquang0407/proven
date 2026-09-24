@@ -1,5 +1,5 @@
-from softgnn_advisor.core.failure_classifier import classify_pytest_failure, replanable_failures
-from softgnn_advisor.core.test_generation_agent import PlanVerificationResult
+from proven.core.failure_classifier import classify_pytest_failure, replanable_failures
+from proven.core.test_generation_agent import PlanVerificationResult
 
 
 def test_classify_environment_failure_skips_replan():

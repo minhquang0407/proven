@@ -7,7 +7,7 @@ import sys
 import pytest
 from pathlib import Path
 
-from softgnn_advisor.core.agent_service import AgentService
+from proven.core.agent_service import AgentService
 
 
 @pytest.fixture
@@ -22,10 +22,10 @@ def test_agent_service_init_and_infer_project(repo_root):
 
 
 def test_agent_service_get_context(repo_root):
-    svc = AgentService(project="softgnn-advisor-test", repo_path=repo_root)
+    svc = AgentService(project="proven-test", repo_path=repo_root)
     # Test on a known function in the codebase
     target_id = "FUNC:build_llm_provider"
-    source_file = "softgnn_advisor/core/llm_provider.py"
+    source_file = "proven/core/llm_provider.py"
     context = svc.get_context(target_id=target_id, source_file=source_file)
 
     assert context["status"] == "success"
@@ -36,7 +36,7 @@ def test_agent_service_get_context(repo_root):
 
 
 def test_agent_service_verify_proof_failure_when_test_fails(repo_root, tmp_path):
-    svc = AgentService(project="softgnn-advisor-test", repo_path=repo_root)
+    svc = AgentService(project="proven-test", repo_path=repo_root)
     # Create a failing test in tmp_path
     failing_test = tmp_path / "test_failing.py"
     failing_test.write_text("def test_broken(): assert 1 == 2\n", encoding="utf-8")
@@ -51,7 +51,7 @@ def test_agent_service_verify_proof_failure_when_test_fails(repo_root, tmp_path)
 
 
 def test_agent_service_verify_proof_failure_when_target_not_executed(repo_root, tmp_path):
-    svc = AgentService(project="softgnn-advisor-test", repo_path=repo_root)
+    svc = AgentService(project="proven-test", repo_path=repo_root)
     # Create a test that passes but never touches build_llm_provider
     passing_test = tmp_path / "test_dummy.py"
     passing_test.write_text("def test_dummy(): assert 1 + 1 == 2\n", encoding="utf-8")
@@ -71,13 +71,13 @@ def test_cli_agent_context(repo_root):
     cmd = [
         sys.executable,
         "-m",
-        "softgnn_advisor.cli",
+        "proven.cli",
         "agent",
         "context",
         "--target",
         "FUNC:build_llm_provider",
         "--file",
-        "softgnn_advisor/core/llm_provider.py",
+        "proven/core/llm_provider.py",
         "--path",
         repo_root,
         "--json",
@@ -90,14 +90,14 @@ def test_cli_agent_context(repo_root):
 
 
 def test_standalone_script_get_context(repo_root):
-    script_path = os.path.join(repo_root, "skills", "softgnn-advisor", "scripts", "get_target_context.py")
+    script_path = os.path.join(repo_root, "skills", "proven", "scripts", "get_target_context.py")
     cmd = [
         sys.executable,
         script_path,
         "--target",
         "FUNC:build_llm_provider",
         "--file",
-        "softgnn_advisor/core/llm_provider.py",
+        "proven/core/llm_provider.py",
         "--path",
         repo_root,
     ]
@@ -112,7 +112,7 @@ def test_cli_agent_scan(repo_root):
     cmd = [
         sys.executable,
         "-m",
-        "softgnn_advisor.cli",
+        "proven.cli",
         "agent",
         "scan",
         "--path",
@@ -128,7 +128,7 @@ def test_cli_agent_scan(repo_root):
 
 
 def test_standalone_script_scan_impact(repo_root):
-    script_path = os.path.join(repo_root, "skills", "softgnn-advisor", "scripts", "scan_impact.py")
+    script_path = os.path.join(repo_root, "skills", "proven", "scripts", "scan_impact.py")
     cmd = [
         sys.executable,
         script_path,
@@ -143,11 +143,11 @@ def test_standalone_script_scan_impact(repo_root):
 
 
 def test_agent_service_verify_proof_success_when_target_executed(repo_root):
-    svc = AgentService(project="softgnn-advisor-test", repo_path=repo_root)
+    svc = AgentService(project="proven-test", repo_path=repo_root)
     # Write a test inside tests/ that actually calls build_llm_provider
     test_code = """
 import pytest
-from softgnn_advisor.core.llm_provider import build_llm_provider, LLMConfig
+from proven.core.llm_provider import build_llm_provider, LLMConfig
 
 def test_calls_build_llm_provider():
     config = LLMConfig(provider="template", model="none", base_url="http://none")
@@ -182,7 +182,7 @@ def test_standalone_scripts_schema_flag(repo_root):
         "train_gnn.py",
     ]
     for script_name in scripts:
-        script_path = os.path.join(repo_root, "skills", "softgnn-advisor", "scripts", script_name)
+        script_path = os.path.join(repo_root, "skills", "proven", "scripts", script_name)
         proc = subprocess.run(
             [sys.executable, script_path, "--schema"],
             cwd=repo_root,
@@ -204,4 +204,13 @@ def test_agent_service_refresh_runtime_targeted(repo_root):
     assert res["target_used"] == "tests/test_scan_fallback.py"
     assert res["passed_tests"] > 0
     assert "mode_used" in res
+
+
+def test_backward_compatibility_softgnn_advisor_shim():
+    import softgnn_advisor
+    from softgnn_advisor.core.agent_service import AgentService as CompatAgentService
+    from proven.core.agent_service import AgentService as ProvenAgentService
+
+    assert CompatAgentService is ProvenAgentService
+    assert hasattr(softgnn_advisor, "__version__")
 

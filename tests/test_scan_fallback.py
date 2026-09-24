@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from softgnn_advisor.core.scan_fallback import (
+from proven.core.scan_fallback import (
     generate_same_branch_fallback,
     git_changed_files,
     git_worktree_dirty,

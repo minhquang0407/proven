@@ -1,6 +1,6 @@
 import pytest
 
-from softgnn_advisor.core.dashboard_server import ALLOWED_ACTIONS, _start_job
+from proven.core.dashboard_server import ALLOWED_ACTIONS, _start_job
 
 
 def test_dashboard_action_allowlist_rejects_unknown(tmp_path):

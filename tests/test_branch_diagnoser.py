@@ -5,8 +5,8 @@ import sys
 from pathlib import Path
 import pytest
 
-from softgnn_advisor.core.branch_diagnoser import BranchDiagnoser
-from softgnn_advisor.core.agent_service import AgentService
+from proven.core.branch_diagnoser import BranchDiagnoser
+from proven.core.agent_service import AgentService
 
 
 def test_diagnose_mocking_detected(tmp_path):

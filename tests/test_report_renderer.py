@@ -1,7 +1,7 @@
 import types
 
-from softgnn_advisor.core.report_renderer import build_generate_report_payload, render_html_report, save_html_report
-from softgnn_advisor.infrastructure.pipelines.runtime_coverage_mapper import RuntimeCoverageEdge
+from proven.core.report_renderer import build_generate_report_payload, render_html_report, save_html_report
+from proven.infrastructure.pipelines.runtime_coverage_mapper import RuntimeCoverageEdge
 
 
 def test_render_html_report_escapes_input():
@@ -62,8 +62,8 @@ def test_build_report_payload_includes_proof_counts():
 
 
 def test_save_html_report_writes_latest(tmp_path, monkeypatch):
-    import softgnn_advisor.config.settings as settings
-    import softgnn_advisor.core.report_renderer as renderer
+    import proven.config.settings as settings
+    import proven.core.report_renderer as renderer
 
     def fake_paths(project):
         reports = tmp_path / project / 'reports'

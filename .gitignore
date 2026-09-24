@@ -208,14 +208,14 @@ __marimo__/
 
 # --- Project Specific Ignores ---
 
-# KHÔNG BAO GIỜ đẩy dữ liệu (CSV, JSON, G pickle) lên Git
+# Data outputs and caches
 /data_output/
 *.csv
 *.json
 !.skills.json
 *.gpickle
 
-# 2. Bỏ qua các file bí mật (API Keys)
+# Secrets and environment configs
 .env
 *.env
 .env.*
@@ -223,14 +223,15 @@ __marimo__/
 secrets.*
 *.key
 
-# 3. Thư mục môi trường ảo (Python)
+# Virtual environments
 .venv/
 venv/
 env/
 
-# 4. Bỏ qua các file hệ thống / local IDE state
+# System and IDE state
 .DS_Store
 __pycache__/
 .idea/
 .vscode/
+.agents/
 *.log

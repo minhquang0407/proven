@@ -4,10 +4,10 @@ import os
 from pathlib import Path
 import pytest
 
-from softgnn_advisor.core.agent_service import AgentService
-from softgnn_advisor.infrastructure.pipelines.language_router import detect_project_language
-from softgnn_advisor.infrastructure.pipelines.universal_ast_parser import UniversalASTParser
-from softgnn_advisor.infrastructure.pipelines.universal_coverage_mapper import UniversalCoverageMapper
+from proven.core.agent_service import AgentService
+from proven.infrastructure.pipelines.language_router import detect_project_language
+from proven.infrastructure.pipelines.universal_ast_parser import UniversalASTParser
+from proven.infrastructure.pipelines.universal_coverage_mapper import UniversalCoverageMapper
 
 
 # --- 1. LanguageRouter Tests ---

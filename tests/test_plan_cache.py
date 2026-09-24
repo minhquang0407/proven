@@ -1,6 +1,6 @@
 ﻿import types
 
-from softgnn_advisor.core.plan_cache import save_plan_bundle, load_plan_bundle, validate_plan_bundle
+from proven.core.plan_cache import save_plan_bundle, load_plan_bundle, validate_plan_bundle
 
 
 class Result:

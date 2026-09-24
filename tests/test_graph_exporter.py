@@ -3,7 +3,7 @@ import pickle
 import networkx as nx
 import pandas as pd
 
-from softgnn_advisor.core.graph_exporter import export_graph
+from proven.core.graph_exporter import export_graph
 
 
 def test_export_graph_returns_required_shape(tmp_path, monkeypatch):
@@ -28,7 +28,7 @@ def test_export_graph_returns_required_shape(tmp_path, monkeypatch):
     graph.add_edge('FUNC:foo', 'FUNC:bar', type='calls')
     with open(paths['GRAPH_PATH'], 'wb') as f:
         pickle.dump(graph, f)
-    monkeypatch.setattr('softgnn_advisor.core.graph_exporter.get_project_paths', lambda project: paths)
+    monkeypatch.setattr('proven.core.graph_exporter.get_project_paths', lambda project: paths)
 
     data = export_graph('demo', focus='src/foo.py', depth=1, max_nodes=10)
     assert set(data) >= {'project', 'summary', 'nodes', 'edges'}

@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-from softgnn_advisor.core.agent_service import AgentService
-from softgnn_advisor.core.triage_engine import TriageEngine
-from softgnn_advisor.cli import cli
+from proven.core.agent_service import AgentService
+from proven.core.triage_engine import TriageEngine
+from proven.cli import cli
 
 
 def test_agent_service_predict_impact():
@@ -42,7 +42,7 @@ def test_agent_service_predict_impact():
     )
 
     with patch.object(svc, "ensure_initialized", return_value=True):
-        with patch("softgnn_advisor.core.impact_engine.ImpactEngine") as mock_engine_cls:
+        with patch("proven.core.impact_engine.ImpactEngine") as mock_engine_cls:
             mock_engine_cls.return_value.analyze.return_value = mock_result
             res = svc.predict_impact("FUNC:test_func", mode="hybrid")
             assert res["status"] == "success"
@@ -80,9 +80,9 @@ def test_triage_engine_model_not_found(tmp_path):
         "torch_geometric": m,
         "torch_geometric.transforms": m,
         "pandas": m,
-        "softgnn_advisor.core.ai.predicter": m,
-        "softgnn_advisor.core.ai.gnn_architecture": m,
-        "softgnn_advisor.infrastructure.pipelines.feature_encoder": m,
+        "proven.core.ai.predicter": m,
+        "proven.core.ai.gnn_architecture": m,
+        "proven.infrastructure.pipelines.feature_encoder": m,
     }
     with patch.dict(sys.modules, mock_dict):
         res = engine.triage("Critical payment timeout bug")
@@ -130,8 +130,9 @@ def test_agent_service_train_gnn():
     svc = AgentService(project="test_proj", repo_path=".", language="python")
     mock_train_module = MagicMock(run_optimization=MagicMock(return_value=None))
     with patch.object(svc, "ensure_initialized", return_value=True):
-        with patch.dict(sys.modules, {"softgnn_advisor.scripts.train_model": mock_train_module}):
-            with patch("softgnn_advisor.core.agent_service.load_metadata", return_value={"best_val_auc": 0.89, "test_auc": 0.87}):
+        with patch.dict(sys.modules, {"proven.scripts.train_model": mock_train_module}):
+            with patch("proven.core.agent_service.load_metadata", return_value={"best_val_auc": 0.89, "test_auc": 0.87}), \
+                 patch("proven.core.metadata_utils.load_metadata", return_value={"best_val_auc": 0.89, "test_auc": 0.87}):
                 res = svc.train_gnn()
                 assert res["status"] == "success"
                 assert res["test_auc"] == 0.87
@@ -146,7 +147,7 @@ def test_cli_agent_impact():
         "direct_dependents": [],
         "latent_risk_candidates": [],
     }
-    with patch("softgnn_advisor.core.agent_service.AgentService.predict_impact", return_value=mock_res):
+    with patch("proven.core.agent_service.AgentService.predict_impact", return_value=mock_res):
         result = runner.invoke(cli, ["agent", "impact", "--target", "FUNC:foo", "--json"])
         assert result.exit_code == 0
         assert '"FUNC:foo"' in result.output
@@ -160,7 +161,7 @@ def test_cli_agent_triage():
         "top_engineers": [{"rank": 1, "developer": "Bob", "final_score": 0.8}],
         "related_files": [],
     }
-    with patch("softgnn_advisor.core.agent_service.AgentService.triage_bug", return_value=mock_res):
+    with patch("proven.core.agent_service.AgentService.triage_bug", return_value=mock_res):
         result = runner.invoke(cli, ["agent", "triage", "bug description", "--json"])
         assert result.exit_code == 0
         assert '"Bob"' in result.output
@@ -173,7 +174,7 @@ def test_cli_agent_train():
         "message": "Trained successfully in 5.2s.",
         "test_auc": 0.9,
     }
-    with patch("softgnn_advisor.core.agent_service.AgentService.train_gnn", return_value=mock_res):
+    with patch("proven.core.agent_service.AgentService.train_gnn", return_value=mock_res):
         result = runner.invoke(cli, ["agent", "train", "--json"])
         assert result.exit_code == 0
         assert '"Trained successfully in 5.2s."' in result.output

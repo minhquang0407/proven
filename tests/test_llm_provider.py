@@ -1,6 +1,6 @@
 ﻿import pytest
 
-from softgnn_advisor.core.llm_provider import GeminiProvider, LLMConfig, TemplateFallbackProvider, build_llm_provider, load_llm_config
+from proven.core.llm_provider import GeminiProvider, LLMConfig, TemplateFallbackProvider, build_llm_provider, load_llm_config
 
 
 def test_load_llm_config_defaults_to_template(monkeypatch):

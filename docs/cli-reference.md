@@ -1,6 +1,8 @@
-# SoftGNN Advisor — Complete CLI Command Reference
+# Proven — Complete CLI Command Reference
 
-This is the comprehensive, definitive reference guide for all commands, arguments, options, and execution modes in **SoftGNN Advisor v1.0.0 (PRO Edition)**.
+This is the comprehensive, definitive reference guide for all commands, arguments, options, and execution modes in **Proven v1.0.0 (PRO Edition)**.
+
+> **Note:** The primary CLI command is `proven` (e.g., `proven agent scan`, `proven setup`). The `softgnn` command is retained as a fully compatible alias throughout all subcommands.
 
 ---
 

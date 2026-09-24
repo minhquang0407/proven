@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 import pytest
 
-from softgnn_advisor.core.mutation_gate import MicroMutationGate
-from softgnn_advisor.core.agent_service import AgentService
+from proven.core.mutation_gate import MicroMutationGate
+from proven.core.agent_service import AgentService
 
 
 def test_mutation_gate_kills_mutants_with_strong_assertions(tmp_path):

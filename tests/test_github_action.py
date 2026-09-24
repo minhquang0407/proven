@@ -6,7 +6,7 @@ import sys
 from unittest.mock import MagicMock, patch
 import pytest
 
-from softgnn_advisor.scripts.ci.github_action import (
+from proven.scripts.ci.github_action import (
     COMMENT_MARKER,
     format_audit_markdown,
     parse_event_payload,
@@ -102,7 +102,7 @@ def test_update_comment_in_place_when_comment_exists():
         {"id": 202, "body": "updated"} # Result of PATCH
     ]
 
-    with patch("softgnn_advisor.scripts.ci.github_action.github_api_request", mock_api):
+    with patch("proven.scripts.ci.github_action.github_api_request", mock_api):
         update_or_create_comment(
             repo_full_name="test-org/test-repo",
             pr_number=42,
@@ -130,7 +130,7 @@ def test_create_new_comment_when_none_exists():
         {"id": 303, "body": "created"}             # Result of POST
     ]
 
-    with patch("softgnn_advisor.scripts.ci.github_action.github_api_request", mock_api):
+    with patch("proven.scripts.ci.github_action.github_api_request", mock_api):
         update_or_create_comment(
             repo_full_name="test-org/test-repo",
             pr_number=42,
@@ -169,7 +169,7 @@ def test_main_cli_execution_fail_on_missing_strict(tmp_path):
     ]
 
     with patch("sys.argv", test_args):
-        with patch("softgnn_advisor.core.agent_service.AgentService.scan", return_value=mock_scan_result):
+        with patch("proven.core.agent_service.AgentService.scan", return_value=mock_scan_result):
             with pytest.raises(SystemExit) as exc:
                 main()
             assert exc.value.code == 1
@@ -200,7 +200,7 @@ def test_main_cli_execution_advisory_mode_passes(tmp_path):
     ]
 
     with patch("sys.argv", test_args):
-        with patch("softgnn_advisor.core.agent_service.AgentService.scan", return_value=mock_scan_result):
+        with patch("proven.core.agent_service.AgentService.scan", return_value=mock_scan_result):
             with pytest.raises(SystemExit) as exc:
                 main()
             assert exc.value.code == 0

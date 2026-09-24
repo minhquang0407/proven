@@ -1,6 +1,6 @@
 ﻿import os
 
-from softgnn_advisor.core.change_provider import (
+from proven.core.change_provider import (
     FilesystemSnapshotChangeProvider,
     FullScanChangeProvider,
     build_filesystem_snapshot,

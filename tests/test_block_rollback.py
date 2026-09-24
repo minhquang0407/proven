@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from softgnn_advisor.core.test_generation_agent import GeneratedTestPlan, TestGenerationAgent
+from proven.core.test_generation_agent import GeneratedTestPlan, TestGenerationAgent
 
 
 class DummyScanner:
@@ -12,7 +12,7 @@ class DummyScanner:
 
 
 def _agent(tmp_path, monkeypatch):
-    monkeypatch.setattr("softgnn_advisor.core.test_generation_agent.PRScanner", lambda project, repo_path=None: DummyScanner())
+    monkeypatch.setattr("proven.core.test_generation_agent.PRScanner", lambda project, repo_path=None: DummyScanner())
     agent = TestGenerationAgent("tmp", repo_path=str(tmp_path))
     agent.llm_provider.available = False
     return agent
