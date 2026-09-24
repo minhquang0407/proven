@@ -147,10 +147,20 @@ For safety-critical functions, invoke the **Tri-Agent Arena** where agents co-ev
 ### Causal Reflexion & Topological Memory
 - **Causal Reflexion Engine**: Classifies failures into `UNCOVERED_BRANCH` (bytecode miss) vs `WEAK_ASSERTION` (bytecode hit, mutant survived) and traces causal impact through HGT caller graphs.
 - **Zero-Token Mutant Vault**: Killer mutants are stored in `.proven/mutant_vault/{target}/` and validated in sub-0.05s with **0 LLM tokens**.
-- **Sleep Consolidation**: Periodically consolidate episodic memory into repository axioms:
-  ```bash
-  python skills/proven/scripts/consolidate_memory.py
-  ```
+- **Sleep Consolidation Protocol (Neocortical Abstraction)**:
+  - **Trigger Detection**: When `run_arena.py` output contains `memory_notice.needs_sleep == true` (threshold >= 10 lessons), or after completing a large test suite/PR, execute the Sleep Protocol:
+    1. **Cluster Lessons**: Run `python skills/proven/scripts/consolidate_memory.py`. If output returns `NEEDS_SYNTHESIS`, inspect `clusters_to_synthesize`.
+    2. **Synthesize Axiom in Context**: In your reasoning, distill each cluster into exactly **one** imperative architecture rule (< 15 words) for that module.
+    3. **Commit to Graph**: Execute `commit_axiom.py`:
+       ```bash
+       python skills/proven/scripts/commit_axiom.py \
+         --cluster-id "<cluster_id>" \
+         --module "<module>" \
+         --rule "<distilled_rule>" \
+         --lesson-ids "<id1,id2,...>"
+       ```
+    4. **Confirmation**: Confirm consolidated axioms and shielded lessons with the user.
+    *(Offline/Manual CLI fallback: `python -m proven.cli sleep --force` or `python skills/proven/scripts/consolidate_memory.py --auto-fallback`)*.
 
 ---
 

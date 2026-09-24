@@ -37,6 +37,7 @@ SCHEMA = {
         "reflexion_prompt": {"type": ["string", "null"]},
         "crystallized_lesson": {"type": ["object", "null"]},
         "recorded_vulnerability": {"type": ["object", "null"]},
+        "memory_notice": {"type": ["object", "null"]},
         "message": {"type": "string"}
     },
     "required": ["round_no", "target_id", "test_target", "proof_grade", "is_titanium", "verdict", "message"]

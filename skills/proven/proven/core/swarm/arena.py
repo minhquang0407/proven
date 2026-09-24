@@ -46,6 +46,7 @@ class ArenaRoundResult:
     surviving_mutant_desc: Optional[str] = None
     crystallized_lesson: Optional[Dict[str, Any]] = None
     recorded_vulnerability: Optional[Dict[str, Any]] = None
+    memory_notice: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -239,6 +240,20 @@ class TriAgentArena:
                 reasons.append("Test did not establish physical runtime coverage on target")
             msg = f"Round {round_no} Defeat: {'; '.join(reasons)}. Reflexion prompt generated."
 
+        memory_notice = None
+        if verdict in ("TITANIUM_VICTORY", "MAX_ROUNDS_EXHAUSTED", "STAGNATION_DETECTED"):
+            trigger = GraphMemoryManager.check_sleep_trigger(
+                threshold=10, repo_path=self.repo_path, project_name=self.project
+            )
+            if trigger.get("needs_sleep"):
+                memory_notice = {
+                    "needs_sleep": True,
+                    "unconsolidated_count": trigger.get("unconsolidated_count", 0),
+                    "threshold": trigger.get("threshold", 10),
+                    "action_required": "RUN_SLEEP_CONSOLIDATION",
+                    "instruction": "Run `python skills/proven/scripts/consolidate_memory.py` to synthesize repository axioms.",
+                }
+
         return ArenaRoundResult(
             round_no=round_no,
             max_rounds=max_rounds,
@@ -256,5 +271,6 @@ class TriAgentArena:
             reflexion_prompt=reflexion_prompt,
             crystallized_lesson=crystallized_lesson,
             recorded_vulnerability=recorded_vul,
+            memory_notice=memory_notice,
             message=msg,
         )

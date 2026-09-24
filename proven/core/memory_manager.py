@@ -402,10 +402,224 @@ class GraphMemoryManager:
         return "\n".join(lines)
 
     @classmethod
+    def check_sleep_trigger(
+        cls,
+        threshold: int = 10,
+        repo_path: str = ".",
+        project_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Fast non-mutating check for unconsolidated lessons against threshold."""
+        data = cls._load_raw_memory(repo_path, project_name)
+        nodes = data.get("nodes", {})
+        unconsolidated = [
+            n for n in nodes.values()
+            if n.get("type") == "LESSON" and n.get("status") == "unconsolidated"
+        ]
+        count = len(unconsolidated)
+        return {
+            "needs_sleep": count >= threshold,
+            "unconsolidated_count": count,
+            "threshold": threshold,
+        }
+
+    @staticmethod
+    def _categorize_lesson(lesson_node: Dict[str, Any]) -> str:
+        """Heuristically categorize lesson into 1 of 4 failure mode families."""
+        text = " ".join([
+            str(lesson_node.get("trap", "")),
+            str(lesson_node.get("solution", "")),
+            str(lesson_node.get("rule", "")),
+            str(lesson_node.get("lesson", "")),
+            str(lesson_node.get("failure_mode", "")),
+        ]).lower()
+
+        if any(w in text for w in ("boundary", "off-by-one", "<=", ">=", "<", ">", "range", "index", "slice", "length")):
+            return "BOUNDARY_OFF_BY_ONE"
+        if any(w in text for w in ("none", "null", "empty", "guard", "optional", "missing", "attributeerror")):
+            return "NULL_EMPTY_GUARD"
+        if any(w in text for w in ("state", "rollback", "side_effect", "side-effect", "cache", "mutation", "dirty")):
+            return "STATE_MUTATION_EFFECT"
+        if any(w in text for w in ("chaos", "exception", "raise", "crash", "typeerror", "keyerror", "unhandled")):
+            return "CHAOS_UNHANDLED_EXCEPTION"
+        return "LOGIC_INTEGRITY"
+
+    @classmethod
+    def cluster_unconsolidated_lessons(
+        cls,
+        threshold: int = 10,
+        force: bool = False,
+        repo_path: str = ".",
+        project_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Group unconsolidated lessons by module and failure mode family (Tier 1: Zero-Token)."""
+        data = cls._load_raw_memory(repo_path, project_name)
+        nodes = data.get("nodes", {})
+        unconsolidated = [
+            n for n in nodes.values()
+            if n.get("type") == "LESSON" and n.get("status") == "unconsolidated"
+        ]
+        count = len(unconsolidated)
+
+        if count == 0:
+            return {
+                "status": "noop",
+                "message": "No unconsolidated lessons in memory.",
+                "count": 0,
+                "threshold": threshold,
+                "clusters": [],
+            }
+
+        if count < threshold and not force:
+            return {
+                "status": "threshold_not_met",
+                "message": f"Sample density accumulating: {count}/{threshold} lessons. Run with force=True to consolidate early.",
+                "count": count,
+                "threshold": threshold,
+                "clusters": [],
+            }
+
+        grouped: Dict[str, List[Dict[str, Any]]] = {}
+        for lnode in unconsolidated:
+            tgt = lnode.get("target_id", "")
+            mod = tgt.replace("FUNC:", "").replace("CLASS:", "").split(".")[0] or "general"
+            category = cls._categorize_lesson(lnode)
+            group_key = f"{mod}::{category}"
+            grouped.setdefault(group_key, []).append(lnode)
+
+        clusters = []
+        for group_key, l_list in grouped.items():
+            mod, category = group_key.split("::")
+            h_seed = f"{mod}::{category}::" + "-".join(sorted(l["id"] for l in l_list))
+            cluster_hash = hashlib.sha256(h_seed.encode("utf-8")).hexdigest()[:8]
+            cluster_id = f"{mod}_{category.lower()}_{cluster_hash}"
+
+            lesson_texts = [l.get("rule") or l.get("lesson") or l.get("solution") or "" for l in l_list]
+            traps = [l.get("trap") or l.get("mutant_desc") or "" for l in l_list]
+            targets = list(dict.fromkeys(l.get("target_id") for l in l_list if l.get("target_id")))
+
+            clusters.append({
+                "cluster_id": cluster_id,
+                "module": mod,
+                "category": category,
+                "lesson_ids": [l["id"] for l in l_list],
+                "lessons": [t for t in lesson_texts if t],
+                "traps": [t for t in traps if t],
+                "target_ids": targets,
+                "prompt_instruction": (
+                    f"Synthesize the {len(l_list)} lessons above into exactly 1 concise, imperative "
+                    f"architecture rule (< 15 words) for module '{mod}'. Then call commit_axiom.py."
+                ),
+            })
+
+        return {
+            "status": "NEEDS_SYNTHESIS",
+            "message": f"Ready to synthesize {len(clusters)} axiom clusters from {count} lessons.",
+            "count": count,
+            "threshold": threshold,
+            "clusters": clusters,
+        }
+
+    @classmethod
+    def commit_synthesized_axiom(
+        cls,
+        cluster_id: str,
+        module: str,
+        rule: str,
+        lesson_ids: List[str],
+        repo_path: str = ".",
+        project_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Commit an LLM/Agent synthesized Axiom into the knowledge graph (Tier 2: Knowledge Lineage)."""
+        clean_rule = rule.strip()
+        if not clean_rule:
+            raise ValueError("Axiom rule cannot be empty.")
+
+        data = cls._load_raw_memory(repo_path, project_name)
+        nodes = data.setdefault("nodes", {})
+        edges = data.setdefault("edges", [])
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        clean_cid = cluster_id.replace("AXIOM:", "").replace("AX_", "")
+        axiom_node_id = f"AXIOM:AX_{clean_cid}"
+        label = f"Axiom {module}.{clean_cid.split('_')[-1]}"
+
+        axiom_node = {
+            "id": axiom_node_id,
+            "type": "AXIOM",
+            "axiom_id": f"AX_{clean_cid}",
+            "module": module,
+            "label": label,
+            "rule": clean_rule,
+            "generalized_lessons": lesson_ids,
+            "timestamp": now_iso,
+        }
+        nodes[axiom_node_id] = axiom_node
+
+        for lid in lesson_ids:
+            if lid in nodes:
+                nodes[lid]["status"] = "consolidated"
+                tgt = nodes[lid].get("target_id")
+                if tgt:
+                    edge_c = {"source": tgt, "target": axiom_node_id, "type": "CONSTRAINED_BY"}
+                    if edge_c not in edges:
+                        edges.append(edge_c)
+
+            edge_g = {"source": axiom_node_id, "target": lid, "type": "GENERALIZES"}
+            if edge_g not in edges:
+                edges.append(edge_g)
+
+        cls._save_raw_memory(data, repo_path, project_name)
+        cls._sync_axioms_markdown(repo_path, project_name)
+
+        return {
+            "status": "success",
+            "axiom_id": axiom_node_id,
+            "module": module,
+            "rule": clean_rule,
+            "consolidated_lessons_count": len(lesson_ids),
+        }
+
+    @classmethod
+    def _sync_axioms_markdown(
+        cls,
+        repo_path: str = ".",
+        project_name: Optional[str] = None,
+    ) -> Path:
+        """Regenerate .proven/axioms.md from all AXIOM nodes in memory."""
+        data = cls._load_raw_memory(repo_path, project_name)
+        nodes = data.get("nodes", {})
+        axiom_nodes = [n for n in nodes.values() if n.get("type") == "AXIOM"]
+
+        by_module: Dict[str, List[Dict[str, Any]]] = {}
+        for ax in axiom_nodes:
+            mod = ax.get("module") or "general"
+            by_module.setdefault(mod, []).append(ax)
+
+        lines = [
+            "# Repo-Specific Testing Axioms",
+            "",
+            "> Auto-generated by Proven Sleep Consolidation. These axioms are injected into Author Agent prompts.",
+            "",
+        ]
+
+        for mod, a_list in sorted(by_module.items()):
+            lines.append(f"### Module: `{mod}`")
+            for ax in a_list:
+                lbl = ax.get("label") or f"Axiom {mod}"
+                lines.append(f"- **[{lbl}]**: {ax.get('rule', '')}")
+            lines.append("")
+
+        axioms_file = cls.get_axioms_file(repo_path, project_name)
+        axioms_file.write_text("\n".join(lines), encoding="utf-8")
+        return axioms_file
+
+    @classmethod
     def consolidate_axioms(
         cls,
         repo_path: str = ".",
         project_name: Optional[str] = None,
+        threshold: int = 10,
+        force: bool = True,
     ) -> Dict[str, Any]:
         """Sleep Consolidation (Neocortical Abstraction):
 
@@ -421,11 +635,21 @@ class GraphMemoryManager:
 
         # Collect all LESSON nodes
         lesson_nodes = [n for n in nodes.values() if n.get("type") == "LESSON"]
+        unconsolidated = [n for n in lesson_nodes if n.get("status") == "unconsolidated"]
+
         if not lesson_nodes:
             return {
                 "status": "noop",
                 "message": "No pinned lessons to consolidate.",
                 "total_axioms": 0,
+            }
+
+        if len(unconsolidated) < threshold and not force and unconsolidated:
+            return {
+                "status": "threshold_not_met",
+                "message": f"Sample density accumulating: {len(unconsolidated)}/{threshold} lessons.",
+                "count": len(unconsolidated),
+                "threshold": threshold,
             }
 
         # Group by module
@@ -440,17 +664,7 @@ class GraphMemoryManager:
         new_axiom_nodes = {}
         new_edges = []
 
-        axioms_doc = [
-            "# Repo-Specific Testing Axioms",
-            "",
-            "> Auto-generated by Proven Sleep Consolidation. These axioms are injected into Author Agent prompts.",
-            "",
-        ]
-
         for mod, l_list in by_module.items():
-            axioms_doc.append(f"### Module: `{mod}`")
-
-            # Cluster unique rules
             rule_map: Dict[str, List[str]] = {}
             for lnode in l_list:
                 rule_text = lnode.get("rule") or lnode.get("lesson") or ""
@@ -461,7 +675,6 @@ class GraphMemoryManager:
                 total_axioms += 1
                 axiom_id = f"AXIOM:AX_{mod}_{idx}"
                 label = f"Axiom {mod}.{idx}"
-                axioms_doc.append(f"- **[{label}]**: {rule_text}")
 
                 axiom_node = {
                     "id": axiom_id,
@@ -475,18 +688,15 @@ class GraphMemoryManager:
                 }
                 new_axiom_nodes[axiom_id] = axiom_node
 
-                # Hierarchy edges: (AXIOM) -[GENERALIZES]-> (LESSON)
                 for clid in child_lesson_ids:
                     new_edges.append({
                         "source": axiom_id,
                         "target": clid,
                         "type": "GENERALIZES",
                     })
-                    # Mark lesson consolidated
                     if clid in nodes:
                         nodes[clid]["status"] = "consolidated"
 
-                # Constraint edges: (FUNC) -[CONSTRAINED_BY]-> (AXIOM)
                 for clid in child_lesson_ids:
                     cl_target = nodes.get(clid, {}).get("target_id")
                     if cl_target:
@@ -496,9 +706,6 @@ class GraphMemoryManager:
                             "type": "CONSTRAINED_BY",
                         })
 
-            axioms_doc.append("")
-
-        # Merge new nodes and edges avoiding duplicates
         for aid, anode in new_axiom_nodes.items():
             nodes[aid] = anode
 
@@ -512,10 +719,7 @@ class GraphMemoryManager:
                 edges.append(ne)
 
         cls._save_raw_memory(data, repo_path, project_name)
-
-        # Write markdown summary file
-        axioms_file = cls.get_axioms_file(repo_path, project_name)
-        axioms_file.write_text("\n".join(axioms_doc), encoding="utf-8")
+        axioms_file = cls._sync_axioms_markdown(repo_path, project_name)
 
         return {
             "status": "success",

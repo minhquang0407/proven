@@ -21,20 +21,42 @@ SCHEMA = {
     "description": "Output schema of consolidate_memory.py for sleep consolidation",
     "type": "object",
     "properties": {
-        "status": {"type": "string"},
+        "status": {"type": "string", "enum": ["NEEDS_SYNTHESIS", "threshold_not_met", "noop", "success", "error"]},
         "message": {"type": "string"},
+        "count": {"type": "integer"},
+        "threshold": {"type": "integer"},
+        "clusters": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "cluster_id": {"type": "string"},
+                    "module": {"type": "string"},
+                    "category": {"type": "string"},
+                    "lesson_ids": {"type": "array", "items": {"type": "string"}},
+                    "lessons": {"type": "array", "items": {"type": "string"}},
+                    "traps": {"type": "array", "items": {"type": "string"}},
+                    "target_ids": {"type": "array", "items": {"type": "string"}},
+                    "prompt_instruction": {"type": "string"}
+                }
+            }
+        },
         "total_axioms": {"type": "integer"},
         "axioms_file": {"type": "string"},
         "modules": {"type": "array", "items": {"type": "string"}}
     },
-    "required": ["status", "message", "total_axioms"]
+    "required": ["status", "message"]
 }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Consolidate pinned graph lessons into .proven/axioms.md")
+    parser = argparse.ArgumentParser(description="Consolidate pinned graph lessons into repo-wide axioms")
     parser.add_argument("--project", default=None, help="Project name")
     parser.add_argument("--path", default=".", help="Repository path")
+    parser.add_argument("--threshold", type=int, default=10, help="Minimum unconsolidated lessons required to trigger sleep (default: 10)")
+    parser.add_argument("--force", action="store_true", help="Bypass threshold gate and consolidate immediately")
+    parser.add_argument("--check-only", action="store_true", help="Only check if sleep threshold is met without modifying memory")
+    parser.add_argument("--auto-fallback", action="store_true", help="Automatically consolidate using deterministic rules without agent synthesis")
     parser.add_argument("--schema", action="store_true", help="Print JSON Schema for output and exit")
     args = parser.parse_args()
 
@@ -43,7 +65,29 @@ def main():
         sys.exit(0)
 
     try:
-        res = GraphMemoryManager.consolidate_axioms(repo_path=args.path, project_name=args.project)
+        if args.check_only:
+            res = GraphMemoryManager.check_sleep_trigger(
+                threshold=args.threshold, repo_path=args.path, project_name=args.project
+            )
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+            sys.exit(0)
+
+        if args.auto_fallback:
+            res = GraphMemoryManager.consolidate_axioms(
+                repo_path=args.path,
+                project_name=args.project,
+                threshold=args.threshold,
+                force=args.force,
+            )
+            print(json.dumps(res, indent=2, ensure_ascii=False))
+            sys.exit(0)
+
+        res = GraphMemoryManager.cluster_unconsolidated_lessons(
+            threshold=args.threshold,
+            force=args.force,
+            repo_path=args.path,
+            project_name=args.project,
+        )
         print(json.dumps(res, indent=2, ensure_ascii=False))
         sys.exit(0)
     except Exception as e:

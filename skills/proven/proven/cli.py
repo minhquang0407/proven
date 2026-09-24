@@ -1885,12 +1885,36 @@ def memory_list(target, path, as_json):
 @memory_group.command('consolidate')
 @click.option('--path', default='.', help='Path to repository')
 @click.option('--project', default=None, help='Project name')
+@click.option('--threshold', default=10, help='Minimum unconsolidated lessons required (default: 10)')
+@click.option('--force', is_flag=True, help='Bypass threshold and consolidate immediately')
 @click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
-def memory_consolidate(path, project, as_json):
+def memory_consolidate(path, project, threshold, force, as_json):
     """Run Sleep Consolidation to synthesize pinned lessons into .proven/axioms.md."""
     import json
     from proven.core.memory_manager import GraphMemoryManager
-    res = GraphMemoryManager.consolidate_axioms(repo_path=path, project_name=project)
+    res = GraphMemoryManager.consolidate_axioms(
+        repo_path=path, project_name=project, threshold=threshold, force=force
+    )
+    if as_json:
+        click.echo(json.dumps(res, indent=2, ensure_ascii=False))
+    else:
+        status_color = 'green' if res.get('status') == 'success' else 'yellow'
+        console.print(f"[{status_color}]{res.get('message')}[/{status_color}]")
+
+
+@cli.command('sleep')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--project', default=None, help='Project name')
+@click.option('--threshold', default=10, help='Minimum unconsolidated lessons required (default: 10)')
+@click.option('--force', is_flag=True, help='Bypass threshold and consolidate immediately')
+@click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
+def sleep_cmd(path, project, threshold, force, as_json):
+    """Run Sleep Consolidation to synthesize repository axioms."""
+    import json
+    from proven.core.memory_manager import GraphMemoryManager
+    res = GraphMemoryManager.consolidate_axioms(
+        repo_path=path, project_name=project, threshold=threshold, force=force
+    )
     if as_json:
         click.echo(json.dumps(res, indent=2, ensure_ascii=False))
     else:
