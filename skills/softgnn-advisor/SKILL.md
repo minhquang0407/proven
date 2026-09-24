@@ -33,10 +33,16 @@ To preserve context window efficiency, detailed guides are organized into on-dem
 
 | Trigger / Situation | Read Reference | Purpose |
 | :--- | :--- | :--- |
+| CLI specs, input flags & JSON schemas | [`references/scripts_api_reference.md`](references/scripts_api_reference.md) | Black-box schemas for all standalone scripts (use `--schema`). |
 | Test failed Runtime Proof or Mutation | [`references/proof_gate_guide.md`](references/proof_gate_guide.md) | Branch diagnosis codes (`EARLY_BRANCH`, `MOCKED_OUT`) & mutant kill strategies. |
 | User asks for Blast Radius or Reviewer | [`references/tier2_guide.md`](references/tier2_guide.md) | Latent GNN risk prediction, Bug Triage scoring, and offline HGT training. |
 | Non-Python project (TS, Go, Rust, Java) | [`references/universal_lcov_guide.md`](references/universal_lcov_guide.md) | LCOV file mapping, test command flags, and polyglot setup. |
 | Agent setup / multi-agent integration | [`references/agent_integration.md`](references/agent_integration.md) | Setup for Antigravity, Claude Code, Cursor, and `skill-to-workflow`. |
+
+> **Black-Box Agent Contract**: Treat all scripts in `skills/softgnn-advisor/scripts/` as black-box CLI utilities.
+> NEVER inspect or analyze internal `.py` files (`agent_service.py`, `mutation_gate.py`, etc.).
+> Run any script with `--schema` or consult [`references/scripts_api_reference.md`](references/scripts_api_reference.md) for JSON schemas.
+
 
 ---
 
@@ -102,7 +108,7 @@ python skills/softgnn-advisor/scripts/verify_runtime_proof.py \
 
 ### Stage 7: FINAL AUDIT — Refresh Graph & Report
 ```bash
-python skills/softgnn-advisor/scripts/refresh_runtime_map.py
+python skills/softgnn-advisor/scripts/refresh_runtime_map.py --tests "tests/test_<module>.py"
 ```
 - Report completed targets, test file paths, line coverage percentage, and `TITANIUM PROOF` confirmation.
 

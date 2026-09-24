@@ -6,19 +6,41 @@ import json
 import os
 import sys
 
-# Ensure package root is in sys.path
-repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-if repo_root not in sys.path:
-    sys.path.insert(0, repo_root)
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_skill_root = os.path.abspath(os.path.join(_script_dir, ".."))
+_repo_root = os.path.abspath(os.path.join(_script_dir, "..", ".."))
+for p in (_skill_root, _repo_root):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from softgnn_advisor.core.agent_service import AgentService
+
+SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "TrainGnnOutput",
+    "description": "Output schema of train_gnn.py for offline HGT GNN model training",
+    "type": "object",
+    "properties": {
+        "status": {"type": "string"},
+        "epochs": {"type": "integer"},
+        "best_val_auc": {"type": "number"},
+        "test_auc": {"type": "number"},
+        "model_path": {"type": "string"}
+    },
+    "required": ["status"]
+}
 
 
 def main():
     parser = argparse.ArgumentParser(description="Train HGT Graph AI model for codebase link prediction")
     parser.add_argument("--project", default=None, help="Project name")
     parser.add_argument("--path", default=".", help="Repository path")
+    parser.add_argument("--schema", action="store_true", help="Print JSON Schema for output and exit")
     args = parser.parse_args()
+
+    if args.schema:
+        print(json.dumps(SCHEMA, indent=2))
+        sys.exit(0)
 
     try:
         svc = AgentService(project=args.project, repo_path=args.path)

@@ -67,8 +67,8 @@ When a test fails the Proof Gate (0% lines executed or stopped at a guard clause
     "condition": "x is None",
     "last_executed_line": 42,
     "missed_lines_range": [43, 65],
-    "explanation": "Hàm bị rẽ nhánh sớm ở dòng 42 do điều kiện `if x is None`. Phần thân chính (dòng 43-65) chưa được kích hoạt.",
-    "actionable_suggestion": "Để kích hoạt sâu vào phần thân hàm (dòng 43-65), hãy bổ sung test case truyền tham số hoặc mock data sao cho điều kiện `x is None` là False."
+    "explanation": "Target function branched early at line 42 due to condition `if x is None`. Main body (lines 43-65) was not executed.",
+    "actionable_suggestion": "To reach the core function body (lines 43-65), provide test cases where `x is None` is False."
   }
 }
 ```

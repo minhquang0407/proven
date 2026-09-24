@@ -6,12 +6,42 @@ import json
 import sys
 import os
 
-# Ensure package root is in sys.path
-repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-if repo_root not in sys.path:
-    sys.path.insert(0, repo_root)
+# Ensure package root and skill root are in sys.path
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_skill_root = os.path.abspath(os.path.join(_script_dir, ".."))
+_repo_root = os.path.abspath(os.path.join(_script_dir, "..", ".."))
+for p in (_skill_root, _repo_root):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from softgnn_advisor.core.agent_service import AgentService
+
+SCHEMA = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ScanImpactOutput",
+    "description": "Output schema of scan_impact.py for changed code and coverage gap detection",
+    "type": "object",
+    "properties": {
+        "changed_count": {"type": "integer", "description": "Total count of changed functions in the diff"},
+        "contract_diff_count": {"type": "integer", "description": "Count of functions with modified interfaces/contracts"},
+        "missing_count": {"type": "integer", "description": "Count of changed functions lacking runtime test proof"},
+        "language": {"type": "string", "description": "Detected primary programming language"},
+        "missing_coverage": {
+            "type": "array",
+            "description": "List of functions requiring test coverage",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "target_id": {"type": "string", "description": "Unique identifier, e.g. FUNC:process_order"},
+                    "file": {"type": "string", "description": "Source file path"},
+                    "risk": {"type": "number", "description": "Calculated risk score between 0.0 and 1.0"}
+                },
+                "required": ["target_id", "file"]
+            }
+        }
+    },
+    "required": ["changed_count", "missing_count", "missing_coverage"]
+}
 
 
 def main():
@@ -23,7 +53,12 @@ def main():
     parser.add_argument("--source", default="auto", choices=["auto", "git", "filesystem", "full-scan"], help="Diff source")
     parser.add_argument("--lang", default=None, help="Language override (python, typescript, go, etc.)")
     parser.add_argument("--fan-out", action="store_true", help="Generate parallel Sub-Agent worker tasks")
+    parser.add_argument("--schema", action="store_true", help="Print JSON Schema for output and exit")
     args = parser.parse_args()
+
+    if args.schema:
+        print(json.dumps(SCHEMA, indent=2))
+        sys.exit(0)
 
     try:
         svc = AgentService(project=args.project, repo_path=args.path, language=args.lang)

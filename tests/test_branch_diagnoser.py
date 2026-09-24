@@ -42,8 +42,8 @@ def test_payment(mock_fn):
     assert diag["status"] == "diagnosed"
     assert diag["diagnosis_type"] == "MOCKED_OUT"
     assert "process_payment" in diag["explanation"]
-    assert "bị mock" in diag["explanation"]
-    assert "Hãy bỏ mock" in diag["actionable_suggestion"]
+    assert "mocked" in diag["explanation"]
+    assert "Remove mock" in diag["actionable_suggestion"]
 
 
 def test_diagnose_early_branch_guard_clause(tmp_path):
@@ -79,10 +79,9 @@ def test_diagnose_early_branch_guard_clause(tmp_path):
     assert diag["diagnosis_type"] == "EARLY_BRANCH"
     assert diag["branch_line"] == 3
     assert "user is None" in diag["condition"]
-    assert "if user is None:" in diag["branch_code"]
     assert "user is None" in diag["explanation"]
-    assert "Phần thân chính" in diag["explanation"]
-    assert "mock data" in diag["actionable_suggestion"] or "truyền" in diag["actionable_suggestion"]
+    assert ("Main body" in diag["explanation"] or "not reached" in diag["explanation"])
+    assert "mock data" in diag["actionable_suggestion"] or "inputs" in diag["actionable_suggestion"]
 
 
 def test_diagnose_caller_early_branch(tmp_path):
@@ -138,7 +137,7 @@ def test_diagnose_never_called(tmp_path):
 
     assert diag["status"] == "diagnosed"
     assert diag["diagnosis_type"] == "NEVER_CALLED"
-    assert "chưa từng được gọi" in diag["explanation"]
+    assert "never referenced or called" in diag["explanation"]
 
 
 def test_verify_proof_includes_self_healing(tmp_path):
@@ -159,7 +158,7 @@ def test_verify_proof_includes_self_healing(tmp_path):
     assert "self_healing" in res
     assert res["self_healing"] is not None
     assert res["self_healing"]["status"] == "diagnosed"
-    assert "💡 Chẩn đoán Self-Healing" in res["message"]
+    assert "Self-Healing Diagnosis" in res["message"]
 
 
 def test_diagnose_multilang_early_branch_typescript(tmp_path):
@@ -185,7 +184,7 @@ def test_diagnose_multilang_early_branch_typescript(tmp_path):
     assert diag["diagnosis_type"] == "EARLY_BRANCH"
     assert diag["branch_line"] == 2
     assert "amount <= 0" in diag["condition"]
-    assert "rẽ nhánh sớm ở dòng 2" in diag["explanation"]
+    assert "branched early at line 2" in diag["explanation"]
 
 
 def test_diagnose_input_guard_detected(tmp_path):

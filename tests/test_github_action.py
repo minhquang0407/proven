@@ -32,12 +32,12 @@ def test_format_audit_markdown_with_missing_coverage():
     md = format_audit_markdown(scan_result, repo_full_name="org/repo")
 
     assert COMMENT_MARKER in md
-    assert "⚠️ SoftGNN Advisor — Phát hiện thay đổi chưa có Runtime Test Proof" in md
+    assert "SoftGNN Advisor — Untested Changes Detected" in md
     assert "FUNC:process_payment" in md
     assert "FUNC:validate_token" in md
     assert "src/payments.py" in md
     assert "0.85" in md
-    assert "Hướng dẫn cho Coding Agent" in md
+    assert "Coding Agent Guidance" in md
     assert "get_target_context.py" in md
     assert "verify_runtime_proof.py" in md
 
@@ -54,10 +54,10 @@ def test_format_audit_markdown_with_zero_missing_coverage():
     md = format_audit_markdown(scan_result, repo_full_name="org/repo")
 
     assert COMMENT_MARKER in md
-    assert "✅ SoftGNN Advisor — Toàn bộ hàm thay đổi đã có Runtime Proof!" in md
+    assert "SoftGNN Advisor — All Changed Functions Have Runtime Proof!" in md
     assert "100%" in md
     assert "typescript" in md
-    assert "Hướng dẫn cho Coding Agent" not in md
+    assert "Coding Agent Guidance" not in md
 
 
 def test_parse_event_payload(tmp_path):
