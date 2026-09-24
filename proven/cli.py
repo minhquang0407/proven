@@ -1,4 +1,5 @@
 import click
+import json
 import os
 import sys
 from rich.console import Console
@@ -1834,6 +1835,54 @@ def agent_arena(target, test_target, round_no, pytest_args, project, path, as_js
     else:
         status_color = 'green' if result.is_titanium else 'yellow'
         console.print(f"[{status_color}]{result.message}[/{status_color}]")
+
+
+@agent_group.command('explain-attention')
+@click.option('--target', required=True, help='Target symbol ID, e.g. FUNC:foo')
+@click.option('--hops', default=3, show_default=True, help='Number of message-passing hops')
+@click.option('--top-k', default=5, show_default=True, help='Number of top attended nodes')
+@click.option('--mode', type=click.Choice(['hybrid', 'gnn', 'topological']), default='hybrid', show_default=True, help='Attention extraction mode')
+@click.option('--visualize', is_flag=True, help='Print ASCII attention tree to terminal')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
+def agent_explain_attention(target, hops, top_k, mode, visualize, project, path, as_json):
+    """Explain multi-hop GNN/topological attention for target symbol."""
+    from proven.core.agent_service import AgentService
+    svc = AgentService(project=project, repo_path=path)
+    data = svc.explain_attention(target_symbol=target, hops=hops, top_k=top_k, mode=mode)
+    if as_json:
+        click.echo(json.dumps(data, indent=2, ensure_ascii=False))
+    else:
+        console.rule(f"[bold cyan]GraphRAG Attention: {target}")
+        console.print(data.get('ascii_tree', ''))
+        if data.get('prompt_block'):
+            console.print("\n[bold magenta]Injected GraphRAG Prompt Context:[/bold magenta]")
+            console.print(data['prompt_block'])
+
+
+@cli.command('explain-attention')
+@click.option('--target', required=True, help='Target symbol ID, e.g. FUNC:foo')
+@click.option('--hops', default=3, show_default=True, help='Number of message-passing hops')
+@click.option('--top-k', default=5, show_default=True, help='Number of top attended nodes')
+@click.option('--mode', type=click.Choice(['hybrid', 'gnn', 'topological']), default='hybrid', show_default=True, help='Attention extraction mode')
+@click.option('--visualize', is_flag=True, help='Print ASCII attention tree to terminal')
+@click.option('--project', default=None, help='Project name')
+@click.option('--path', default='.', help='Path to repository')
+@click.option('--json/--no-json', 'as_json', default=False, help='Output as JSON')
+def cli_explain_attention(target, hops, top_k, mode, visualize, project, path, as_json):
+    """Explain multi-hop GNN/topological attention for a target symbol."""
+    from proven.core.agent_service import AgentService
+    svc = AgentService(project=project, repo_path=path)
+    data = svc.explain_attention(target_symbol=target, hops=hops, top_k=top_k, mode=mode)
+    if as_json:
+        click.echo(json.dumps(data, indent=2, ensure_ascii=False))
+    else:
+        console.rule(f"[bold cyan]GraphRAG Attention: {target}")
+        console.print(data.get('ascii_tree', ''))
+        if data.get('prompt_block'):
+            console.print("\n[bold magenta]Injected GraphRAG Prompt Context:[/bold magenta]")
+            console.print(data['prompt_block'])
 
 
 @cli.command('arena')

@@ -69,11 +69,14 @@ python skills/proven/scripts/scan_impact.py
 - Reads `missing_coverage`: Changed functions lacking runtime tests.
 - If user specified a specific function (e.g. `FUNC:foo`), skip directly to Stage 2.
 
-### Stage 2: CONTEXT — Surgical Code Extraction
+### Stage 2: CONTEXT — Surgical Code Extraction & Code GraphRAG
 ```bash
 python skills/proven/scripts/get_target_context.py --target "FUNC:<target_name>"
+# Optional: Explain GNN multi-hop attention
+python skills/proven/scripts/explain_attention.py --target "FUNC:<target_name>" --visualize
 ```
-- Extract source code, signature, callers, callees, and repo fixture styles.
+- Extracts source code, signature, callers, callees, and repo fixture styles.
+- Automatically includes **Code GraphRAG Context** (< 120 tokens): multi-hop blast radius, callee state mutations, and shared transactions to guide test assertions.
 
 ### Stage 3: AUTHOR — Write Behavioral Tests
 Write into the suggested test file following **5 Golden Rules**:

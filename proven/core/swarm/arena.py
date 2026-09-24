@@ -81,6 +81,7 @@ class TriAgentArena:
             "source_code": context.get("source_code"),
             "suggested_test_file": context.get("suggested_test_file"),
             "scoped_memory": memory_prompt,
+            "graph_rag_context": context.get("graph_rag_prompt"),
             "directive": (
                 "Write defensive tests covering happy paths, error boundaries, and state changes. "
                 "Always assert exact return values and side-effects to resist adversarial mutation."
@@ -121,6 +122,7 @@ class TriAgentArena:
             "source_code": source_code,
             "author_test_target": test_target,
             "author_test_code": test_content[:4000],
+            "graph_rag_context": context.get("graph_rag_prompt"),
             "directive": (
                 "Analyze the Author's test assertions. What return attributes, side-effects, or boundary conditions are NOT verified? "
                 "Formulate a subtle semantic mutation (e.g., boundary flip, nullifying side-effect statement, returning None) "

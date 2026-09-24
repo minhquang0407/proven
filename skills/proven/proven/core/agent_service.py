@@ -20,6 +20,7 @@ from proven.infrastructure.pipelines.runtime_coverage_mapper import RuntimeCover
 from proven.infrastructure.pipelines.universal_ast_parser import UniversalASTParser
 from proven.infrastructure.pipelines.universal_coverage_mapper import UniversalCoverageMapper
 from proven.core.branch_diagnoser import BranchDiagnoser
+from proven.core.graph_rag import CodeGraphRAG
 from proven.core.memory_manager import GraphMemoryManager
 from proven.core.mutation_gate import MicroMutationGate
 from proven.core.mutant_vault import MutantVault
@@ -206,7 +207,7 @@ class AgentService:
             pass
         return []
 
-    def get_context(self, target_id, source_file=None, lang=None):
+    def get_context(self, target_id, source_file=None, lang=None, include_graph_rag=True):
         """Extract surgical context for target function."""
         active_lang = lang or self.language
         resolved_file = source_file or self._resolve_source_file(target_id)
@@ -256,6 +257,11 @@ class AgentService:
                 'repo_memory': GraphMemoryManager.get_scoped_memory_prompt(
                     target_id=target_id, repo_path=self.repo_path, project_name=self.project
                 ) or None,
+                'graph_rag_prompt': (
+                    CodeGraphRAG.build_graph_rag_prompt(
+                        target_id=target_id, repo_path=self.repo_path, project_name=self.project
+                    ) or None
+                ) if include_graph_rag else None,
                 'pinned_lessons': GraphMemoryManager.get_pinned_lessons(
                     target_id, repo_path=self.repo_path, project_name=self.project
                 ),
@@ -287,6 +293,11 @@ class AgentService:
             'repo_memory': GraphMemoryManager.get_scoped_memory_prompt(
                 target_id=target_id, repo_path=self.repo_path, project_name=self.project
             ) or None,
+            'graph_rag_prompt': (
+                CodeGraphRAG.build_graph_rag_prompt(
+                    target_id=target_id, repo_path=self.repo_path, project_name=self.project
+                ) or None
+            ) if include_graph_rag else None,
             'pinned_lessons': GraphMemoryManager.get_pinned_lessons(
                 target_id, repo_path=self.repo_path, project_name=self.project
             ),
@@ -971,4 +982,24 @@ class AgentService:
                 "project": self.project,
                 "message": f"Training failed: {exc}",
             }
+
+    def explain_attention(
+        self,
+        target_symbol: str,
+        hops: int = 3,
+        top_k: int = 5,
+        mode: str = "hybrid",
+    ) -> dict:
+        """Extract multi-hop subgraph attention and explainability tree for target symbol."""
+        self.ensure_initialized()
+        data = CodeGraphRAG.extract_subgraph_attention(
+            target_id=target_symbol,
+            hops=hops,
+            top_k=top_k,
+            mode=mode,
+            repo_path=self.repo_path,
+            project_name=self.project,
+        )
+        data["ascii_tree"] = CodeGraphRAG.format_attention_tree(data)
+        return data
 

@@ -188,6 +188,38 @@ def export_graph(project, focus=None, target=None, depth=1, max_nodes=500):
     keep = _slice(nodes, edges, focus=focus, target=target, depth=max(0, int(depth or 0)), max_nodes=max_nodes)
     visible_nodes = [nodes[node_id] for node_id in keep if node_id in nodes]
     visible_edges = [e for e in edges if e.get('source') in keep and e.get('target') in keep and not e.get('source', '').startswith('__error__')]
+
+    # GraphRAG Attention Heatmap Decoration
+    if target:
+        try:
+            from proven.core.graph_rag import CodeGraphRAG
+            attn_data = CodeGraphRAG.extract_subgraph_attention(
+                target_id=target, hops=max(1, int(depth or 3)), top_k=20, project_name=project
+            )
+            attn_map = {n['symbol']: n['attention_score'] for n in attn_data.get('attended_nodes', [])}
+            for n in visible_nodes:
+                nid = n.get('id', '')
+                lbl = n.get('label', '')
+                score = attn_map.get(nid) or attn_map.get(lbl) or attn_map.get(f"FUNC:{lbl}")
+                if nid == target or lbl == target.replace('FUNC:', ''):
+                    n['attention_score'] = 1.0
+                    n['is_attention_target'] = True
+                elif score is not None:
+                    n['attention_score'] = score
+                    n['is_attention_path'] = True
+
+            for e in visible_edges:
+                s, t = e.get('source'), e.get('target')
+                s_node = nodes.get(s, {})
+                t_node = nodes.get(t, {})
+                s_score = s_node.get('attention_score', 0.0)
+                t_score = t_node.get('attention_score', 0.0)
+                if s_score > 0 and t_score > 0:
+                    e['attention_weight'] = round(min(s_score, t_score), 2)
+                    e['is_attention_path'] = True
+        except Exception:
+            pass
+
     counts = Counter(node.get('type', 'Unknown') for node in visible_nodes)
     return {
         'project': project,
