@@ -10,7 +10,7 @@ Traditional test generation relies on single-agent loops with weak surface-level
 
 ```
                ┌──────────────────────────────────────────────────┐
-               │       🧠 CRITIC AGENT (Supervisor / Referee)     │
+               │       CRITIC AGENT (Supervisor / Referee)     │
                │   - Dynamic Bytecode Tracing (Coverage Gate)     │
                │   - HGT Heterogeneous Graph Topology (Causal AST)│
                │   - Micro-Mutation Verification & Mutant Vault   │
@@ -20,7 +20,7 @@ Traditional test generation relies on single-agent loops with weak surface-level
                  ┌───────────────────────┴───────────────────────┐
                  ▼                                               ▼
    ┌───────────────────────────┐                   ┌───────────────────────────┐
-   │   🛡️ AUTHOR AGENT (Blue)  │                   │  ⚔️ ADVERSARY AGENT (Red) │
+   │   AUTHOR AGENT (Blue)  │                   │  ADVERSARY AGENT (Red) │
    │ - Persona: author_agent   │◀──White-box Review── - Persona: adversary_agent│
    │ - Goal: Bulletproof Tests │                   │ - Goal: Inject Semantic   │
    │ - Reads: Scoped Axioms    │                   │   Mutants that survive    │

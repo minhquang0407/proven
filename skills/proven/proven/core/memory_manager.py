@@ -397,7 +397,7 @@ class GraphMemoryManager:
         # 3. Warning on Known Vulnerabilities
         if vulnerabilities:
             latest_vul = vulnerabilities[-1]
-            lines.append(f"- **⚠️ Warning: Known Blindspot**: {latest_vul.get('surviving_mutant')}")
+            lines.append(f"- **Warning: Known Blindspot**: {latest_vul.get('surviving_mutant')}")
 
         return "\n".join(lines)
 

@@ -121,7 +121,7 @@ def _proof_cards(payload):
     for item in payload.get('verification', []):
         status = item.get('proof_status', 'skipped')
         badge = {'pass': 'ok', 'fail': 'bad', 'skipped': 'skip'}.get(status, 'skip')
-        icon = {'pass': '✅', 'fail': '❌', 'skipped': '—'}.get(status, '—')
+        icon = {'pass': '[PASS]', 'fail': '[FAIL]', 'skipped': '—'}.get(status, '—')
         plan = plans_by_target.get(item.get('target_id'), {})
         cards.append(f"""
         <article class="proof-card {badge}">

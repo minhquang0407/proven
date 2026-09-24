@@ -1356,7 +1356,7 @@ Constraints:
         if result.verification_results:
             lines += ['## Verification Results', '', '| Test file | Target | Status | Repairs | Proof |', '|---|---|---|---|---|']
             for item in result.verification_results:
-                proof_icon = {'pass': '✅ PASS', 'fail': '❌ FAIL', 'skipped': '—'}.get(
+                proof_icon = {'pass': '[PASS] PASS', 'fail': '[FAIL] FAIL', 'skipped': '—'}.get(
                     getattr(item, 'proof_status', 'skipped'), '—')
                 proof_detail = getattr(item, 'proof_message', '')
                 proof_cell = f'{proof_icon} {proof_detail}' if proof_detail else proof_icon

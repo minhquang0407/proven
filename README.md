@@ -45,13 +45,13 @@ flowchart LR
 
 ---
 
-## 🧠 Neuro-Symbolic AI: Tri-Agent Adversarial Co-Evolution
+## Neuro-Symbolic AI: Tri-Agent Adversarial Co-Evolution
 
 Beyond standard test runners, Proven is engineered as a **Neuro-Symbolic Multi-Agent System**. Testing is framed as a non-zero-sum game between specialized agents mediated by an infallible symbolic referee:
 
 ```
                ┌──────────────────────────────────────────────────┐
-               │       🧠 CRITIC AGENT (Supervisor / Referee)     │
+               │       CRITIC AGENT (Supervisor / Referee)     │
                │   - Dynamic Bytecode Tracing (Coverage Gate)     │
                │   - HGT Heterogeneous Graph Topology (Causal AST)│
                │   - Micro-Mutation Verification & Mutant Vault   │
@@ -61,7 +61,7 @@ Beyond standard test runners, Proven is engineered as a **Neuro-Symbolic Multi-A
                  ┌───────────────────────┴───────────────────────┐
                  ▼                                               ▼
    ┌───────────────────────────┐                   ┌───────────────────────────┐
-   │   🛡️ AUTHOR AGENT (Blue)  │                   │  ⚔️ ADVERSARY AGENT (Red) │
+   │   AUTHOR AGENT (Blue)  │                   │  ADVERSARY AGENT (Red) │
    │ - Synthesizes test suite  │◀──White-box Review── - Injects subtle mutants │
    │ - Reads Graph Axioms      │                   │ - Aims to bypass Author   │
    │ - Bounded memory (<80 tok)│                   │   with semantic anomalies │
@@ -325,6 +325,6 @@ pytest
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the [MIT License](LICENSE).

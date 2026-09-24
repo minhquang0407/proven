@@ -1,11 +1,11 @@
 """Parallel Multi-Persona Red Team (Adversarial Swarm) for Proven.
 
 Implements three distinct attack personas to overcome single-agent cognitive blindspots:
-1. ⚔️ RedBoundaryAgent ("Boundary & Logic Hacker"):
+1. RedBoundaryAgent ("Boundary & Logic Hacker"):
    Inverts comparison operators (<, >, ==, !=), flips booleans (and/or), off-by-one arithmetic.
-2. ⚔️ RedStateAgent ("Side-Effect & State Saboteur"):
+2. RedStateAgent ("Side-Effect & State Saboteur"):
    Deletes side-effects, state mutations, cache evictions, database rollbacks, event emissions.
-3. ⚔️ RedChaosAgent ("Chaos & Exception Poisoner"):
+3. RedChaosAgent ("Chaos & Exception Poisoner"):
    Injects None returns, empty collections, type mismatches, and unhandled exception paths.
 
 Features dynamic swarm scaling based on target complexity and HGT blast radius.

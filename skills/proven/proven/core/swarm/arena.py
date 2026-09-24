@@ -1,9 +1,9 @@
 """Tri-Agent Adversarial Arena for Proven.
 
 Orchestrates the co-evolutionary debate between:
-- 🔵 Author Agent (Defensive Tester)
-- 🔴 Adversary Agent (Semantic Bug Injector / Red Swarm)
-- 🧠 Critic Agent (Ground Truth Referee & Reflexion Synthesizer)
+- Author Agent (Defensive Tester)
+- Adversary Agent (Semantic Bug Injector / Red Swarm)
+- Critic Agent (Ground Truth Referee & Reflexion Synthesizer)
 
 Enforces Game-Theoretic Convergence & Stopping Criteria:
 1. TITANIUM_VICTORY: Nash equilibrium reached (all mutants killed, vault passed).

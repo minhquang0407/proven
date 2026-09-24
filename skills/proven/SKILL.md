@@ -121,7 +121,7 @@ For safety-critical functions, invoke the **Tri-Agent Arena** where agents co-ev
 
 ```
                ┌──────────────────────────────────────────────────┐
-               │       🧠 CRITIC AGENT (Supervisor / Referee)     │
+               │       CRITIC AGENT (Supervisor / Referee)     │
                │   - Runs Bytecode Tracing & HGT Graph Topology   │
                │   - Synthesizes Causal Reflexion Diagnosis       │
                │   - Verifies Zero-Token Mutant Vault Regression   │
@@ -130,7 +130,7 @@ For safety-critical functions, invoke the **Tri-Agent Arena** where agents co-ev
                  ┌───────────────────────┴───────────────────────┐
                  ▼                                               ▼
    ┌───────────────────────────┐                   ┌───────────────────────────┐
-   │   🛡️ AUTHOR AGENT (Blue)  │                   │  ⚔️ ADVERSARY AGENT (Red) │
+   │   AUTHOR AGENT (Blue)  │                   │  ADVERSARY AGENT (Red) │
    │ - Synthesizes test suite  │◀──White-box Review── - Injects subtle mutants │
    │ - Reads Graph Axioms      │                   │ - Aims to bypass Author   │
    └───────────────────────────┘                   └───────────────────────────┘
