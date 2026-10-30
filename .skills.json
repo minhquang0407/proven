@@ -16,7 +16,8 @@
         "codex",
         "windsurf"
       ],
-      "install_command": "python skills/proven/scripts/install_skill.py --target all"
+      "install_command": "python skills/proven/scripts/install_skill.py --target all",
+      "license": "MIT OR Apache-2.0"
     }
   ]
 }

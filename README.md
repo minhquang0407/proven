@@ -4,7 +4,7 @@ Stop coding agents from writing passing tests around broken code — spec-first 
 
 <p>
   <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version 1.0.0"/>
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License"/>
+  <img src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green.svg" alt="MIT OR Apache-2.0 License"/>
   <img src="https://img.shields.io/badge/languages-Python%20%7C%20Rust%20%7C%20Go%20%7C%20JS%20%7C%20TS%20%7C%20C%20%7C%20C%2B%2B%20%7C%20Java%20%7C%20C%23-0a7ea4.svg" alt="Supported Languages"/>
 </p>
 
@@ -191,7 +191,7 @@ Every subcommand can be called directly (`proven <subcommand>`) or under `agent`
 │   ├── ab_blind_agent_120_max10.json         # Paired mutant results across 120 repositories
 │   ├── ab_2x2_matrix_84_max10.json           # Paired mutant results for 84-repo 2×2 matrix
 │   ├── ab_multiskill_flash_36_max10.json     # 6-arm multi-skill comparison across 36 repos (Gemini Flash)
-│   ├── ab_fault_seeded_flash_36.json    # 3-arm fault-seeded real-bug & false-green dataset across 36 repos (v1.0.0)
+│   ├── ab_fault_seeded_flash_36.json         # 3-arm fault-seeded real-bug & false-green dataset across 36 repos (v1.0.0)
 │   └── empirical-benchmark-data.json         # Aggregated benchmark summary data
 ├── src/
 │   ├── lib.rs                 # Library exports
@@ -217,3 +217,9 @@ Every subcommand can be called directly (`proven <subcommand>`) or under `agent`
 cargo clippy --all-targets -- -D warnings
 cargo test
 ```
+
+---
+
+## License
+
+Licensed under either of [Apache License, Version 2.0](LICENSE-APACHE) or [MIT License](LICENSE-MIT) at your option.

@@ -4,6 +4,7 @@ description: |
   AST context extraction, call-graph analysis, and mutation testing CLI for coding agents. Use when asked to write tests for changed code, PRs, or specific functions, find untested changes, or verify test suites against AST mutations.
 version: 1.0.0
 author: LTCD
+license: MIT OR Apache-2.0
 tags:
   - testing
   - mutation-testing
