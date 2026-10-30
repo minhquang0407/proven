@@ -68,7 +68,7 @@ Without tooling, coding agents read entire files (wasting **~71%** of context) a
 
 ## Verification Workflow
 
-<img width="1024" height="1024" alt="ai-drawing-880433e6-cd5f-4083-8b3d-30f6364ade8d" src="https://github.com/user-attachments/assets/bda0a0ff-c7e5-4c1f-aa99-0132f299a237" />
+<img width="1024" height="728" alt="ai-drawing-880433e6-cd5f-4083-8b3d-30f6364ade8d" src="https://github.com/user-attachments/assets/bda0a0ff-c7e5-4c1f-aa99-0132f299a237" />
 
 ---
 
