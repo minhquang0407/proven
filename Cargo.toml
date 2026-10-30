@@ -1,0 +1,37 @@
+[package]
+name = "proven"
+version = "1.0.0"
+edition = "2024"
+description = "Stop coding agents from writing passing tests around broken code — spec-first AST context, call-graph analysis, and mutation testing CLI"
+authors = ["LTCD"]
+license = "MIT"
+repository = "https://github.com/minhquang0407/proven"
+readme = "README.md"
+keywords = ["ast", "mutation-testing", "testing", "cli", "code-analysis"]
+categories = ["command-line-utilities", "development-tools::testing"]
+exclude = ["docs/ab_*.json", "skills/proven/bin/*"]
+
+[[bin]]
+name = "proven"
+path = "src/main.rs"
+
+[lib]
+name = "proven"
+path = "src/lib.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+rayon = "1.10"
+regex = "1.11"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+walkdir = "2.5"
+
+[dev-dependencies]
+tempfile = "3.12"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true

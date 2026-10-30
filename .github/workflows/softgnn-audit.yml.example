@@ -1,0 +1,26 @@
+# Copy this file to `.github/workflows/proven-audit.yml` in your repository
+name: Proven PR Audit
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  proven-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Proven Action
+        uses: ./
+        with:
+          base-branch: "origin/${{ github.base_ref }}"
+          head-branch: "${{ github.sha }}"
+          fan-out: "true"

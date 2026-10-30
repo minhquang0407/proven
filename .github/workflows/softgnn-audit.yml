@@ -1,0 +1,33 @@
+name: Proven PR Audit
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  proven-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Proven CLI
+        run: cargo build --release
+
+      - name: Run Proven Scan on PR Diff
+        run: |
+          ./target/release/proven scan \
+            --path . \
+            --base "origin/${{ github.base_ref }}" \
+            --head "${{ github.sha }}" \
+            --fan-out \
+            --json

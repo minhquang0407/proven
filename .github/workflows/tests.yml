@@ -1,0 +1,40 @@
+name: Proven CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Set up Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Run Clippy Lints
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Build Release Binary
+        run: cargo build --release
+
+      - name: Run Integration Test Suite
+        run: cargo test -- --nocapture

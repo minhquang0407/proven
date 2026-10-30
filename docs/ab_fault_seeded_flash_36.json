@@ -1,0 +1,4243 @@
+{
+  "benchmark": "Proven v1.0.0 36-Repository Fault-Seeded Polyglot Benchmark (4 Defect Regimes x 9 Languages)",
+  "primary_condition": "Natural Developer Prompt ('Write automated tests for <target_func>') on Multi-File Polyglot Repositories (14-18 files, ~750-1000 LOC, 5-commit Git history)",
+  "model": "Gemini Flash (Model='flash')",
+  "proven_version": "1.0.0",
+  "total_repositories": 36,
+  "total_primary_agent_runs": 108,
+  "total_agent_runs_including_ablation": 216,
+  "arms": {
+    "vanilla": "Flash Vanilla",
+    "obra": "Flash + obra/superpowers",
+    "proven": "Flash + Proven v1.0.0"
+  },
+  "overall": {
+    "vanilla": {
+      "n_repos": 36,
+      "real_bug_caught_count": 32,
+      "real_bug_catch_rate": 0.8889,
+      "real_bug_catch_ci95": [
+        0.7778,
+        0.9722
+      ],
+      "false_green_count": 4,
+      "false_green_rate": 0.1111,
+      "false_green_ci95": [
+        0.0278,
+        0.2222
+      ],
+      "broken_test_count": 0,
+      "source_modified_count": 0,
+      "post_fix_mutants_killed": 263,
+      "post_fix_mutants_total": 308,
+      "post_fix_mutant_kill_rate_unconditional": 0.8539,
+      "post_fix_mutant_kill_ci95": [
+        0.7375,
+        0.9521
+      ],
+      "clean_passing_repos": 32,
+      "post_fix_mutant_kill_rate_conditional": 0.9669,
+      "false_green_buggy_mutants_killed": 36,
+      "false_green_buggy_mutants_total": 36,
+      "false_green_buggy_mutant_kill_rate": 1.0,
+      "env_drift_caught_count": 1,
+      "env_drift_total": 9,
+      "total_lines_read": 4580,
+      "mean_lines_read": 127.2
+    },
+    "obra": {
+      "n_repos": 36,
+      "real_bug_caught_count": 36,
+      "real_bug_catch_rate": 1.0,
+      "real_bug_catch_ci95": [
+        1.0,
+        1.0
+      ],
+      "false_green_count": 0,
+      "false_green_rate": 0.0,
+      "false_green_ci95": [
+        0.0,
+        0.0
+      ],
+      "broken_test_count": 0,
+      "source_modified_count": 0,
+      "post_fix_mutants_killed": 297,
+      "post_fix_mutants_total": 308,
+      "post_fix_mutant_kill_rate_unconditional": 0.9643,
+      "post_fix_mutant_kill_ci95": [
+        0.9329,
+        0.99
+      ],
+      "clean_passing_repos": 36,
+      "post_fix_mutant_kill_rate_conditional": 0.9643,
+      "false_green_buggy_mutants_killed": 0,
+      "false_green_buggy_mutants_total": 0,
+      "false_green_buggy_mutant_kill_rate": 0.0,
+      "env_drift_caught_count": 2,
+      "env_drift_total": 9,
+      "total_lines_read": 4646,
+      "mean_lines_read": 129.1
+    },
+    "proven": {
+      "n_repos": 36,
+      "real_bug_caught_count": 36,
+      "real_bug_catch_rate": 1.0,
+      "real_bug_catch_ci95": [
+        1.0,
+        1.0
+      ],
+      "false_green_count": 0,
+      "false_green_rate": 0.0,
+      "false_green_ci95": [
+        0.0,
+        0.0
+      ],
+      "broken_test_count": 0,
+      "source_modified_count": 0,
+      "post_fix_mutants_killed": 297,
+      "post_fix_mutants_total": 308,
+      "post_fix_mutant_kill_rate_unconditional": 0.9643,
+      "post_fix_mutant_kill_ci95": [
+        0.9297,
+        0.991
+      ],
+      "clean_passing_repos": 36,
+      "post_fix_mutant_kill_rate_conditional": 0.9643,
+      "false_green_buggy_mutants_killed": 0,
+      "false_green_buggy_mutants_total": 0,
+      "false_green_buggy_mutant_kill_rate": 0.0,
+      "env_drift_caught_count": 6,
+      "env_drift_total": 9,
+      "total_lines_read": 3706,
+      "mean_lines_read": 102.9
+    }
+  },
+  "pairwise_statistics": {
+    "proven_vs_vanilla": {
+      "f2p_discordant_a_only": 4,
+      "f2p_discordant_b_only": 0,
+      "f2p_mcnemar_p": 0.125,
+      "false_green_discordant_a_only": 0,
+      "false_green_discordant_b_only": 4,
+      "false_green_mcnemar_p": 0.125,
+      "post_fix_mutant_kill_diff_ci95": [
+        0.0137,
+        0.2299
+      ],
+      "post_fix_mutant_kill_boot_p": 0.0296
+    },
+    "proven_vs_obra": {
+      "f2p_discordant_a_only": 0,
+      "f2p_discordant_b_only": 0,
+      "f2p_mcnemar_p": 1.0,
+      "false_green_discordant_a_only": 0,
+      "false_green_discordant_b_only": 0,
+      "false_green_mcnemar_p": 1.0,
+      "post_fix_mutant_kill_diff_ci95": [
+        -0.013,
+        0.0131
+      ],
+      "post_fix_mutant_kill_boot_p": 0.798
+    },
+    "obra_vs_vanilla": {
+      "f2p_discordant_a_only": 4,
+      "f2p_discordant_b_only": 0,
+      "f2p_mcnemar_p": 0.125,
+      "false_green_discordant_a_only": 0,
+      "false_green_discordant_b_only": 4,
+      "false_green_mcnemar_p": 0.125,
+      "post_fix_mutant_kill_diff_ci95": [
+        0.0131,
+        0.23
+      ],
+      "post_fix_mutant_kill_boot_p": 0.029
+    }
+  },
+  "by_regime": {
+    "A_ORACLE": {
+      "vanilla": {
+        "n_repos": 9,
+        "real_bug_caught_count": 5,
+        "real_bug_catch_rate": 0.5556,
+        "real_bug_catch_ci95": [
+          0.2222,
+          0.8889
+        ],
+        "false_green_count": 4,
+        "false_green_rate": 0.4444,
+        "false_green_ci95": [
+          0.1111,
+          0.7778
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 48,
+        "post_fix_mutants_total": 84,
+        "post_fix_mutant_kill_rate_unconditional": 0.5714,
+        "post_fix_mutant_kill_ci95": [
+          0.2326,
+          0.8851
+        ],
+        "clean_passing_repos": 5,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 36,
+        "false_green_buggy_mutants_total": 36,
+        "false_green_buggy_mutant_kill_rate": 1.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 429,
+        "mean_lines_read": 47.7
+      },
+      "obra": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 84,
+        "post_fix_mutants_total": 84,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 572,
+        "mean_lines_read": 63.6
+      },
+      "proven": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 84,
+        "post_fix_mutants_total": 84,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 508,
+        "mean_lines_read": 56.4
+      }
+    },
+    "B_OMISSION": {
+      "vanilla": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 58,
+        "post_fix_mutants_total": 60,
+        "post_fix_mutant_kill_rate_unconditional": 0.9667,
+        "post_fix_mutant_kill_ci95": [
+          0.9091,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9667,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1751,
+        "mean_lines_read": 194.6
+      },
+      "obra": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 57,
+        "post_fix_mutants_total": 60,
+        "post_fix_mutant_kill_rate_unconditional": 0.95,
+        "post_fix_mutant_kill_ci95": [
+          0.8636,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.95,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1711,
+        "mean_lines_read": 190.1
+      },
+      "proven": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 57,
+        "post_fix_mutants_total": 60,
+        "post_fix_mutant_kill_rate_unconditional": 0.95,
+        "post_fix_mutant_kill_ci95": [
+          0.8636,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.95,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1512,
+        "mean_lines_read": 168.0
+      }
+    },
+    "C_SLICE_CONCURRENCY_ENV": {
+      "vanilla": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 67,
+        "post_fix_mutants_total": 74,
+        "post_fix_mutant_kill_rate_unconditional": 0.9054,
+        "post_fix_mutant_kill_ci95": [
+          0.8143,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9054,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 9,
+        "total_lines_read": 799,
+        "mean_lines_read": 88.8
+      },
+      "obra": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 68,
+        "post_fix_mutants_total": 74,
+        "post_fix_mutant_kill_rate_unconditional": 0.9189,
+        "post_fix_mutant_kill_ci95": [
+          0.84,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9189,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 2,
+        "env_drift_total": 9,
+        "total_lines_read": 759,
+        "mean_lines_read": 84.3
+      },
+      "proven": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 67,
+        "post_fix_mutants_total": 74,
+        "post_fix_mutant_kill_rate_unconditional": 0.9054,
+        "post_fix_mutant_kill_ci95": [
+          0.8143,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9054,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 6,
+        "env_drift_total": 9,
+        "total_lines_read": 618,
+        "mean_lines_read": 68.7
+      }
+    },
+    "D_DEEP_COMPOUND": {
+      "vanilla": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 90,
+        "post_fix_mutants_total": 90,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1601,
+        "mean_lines_read": 177.9
+      },
+      "obra": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 88,
+        "post_fix_mutants_total": 90,
+        "post_fix_mutant_kill_rate_unconditional": 0.9778,
+        "post_fix_mutant_kill_ci95": [
+          0.9444,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9778,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1604,
+        "mean_lines_read": 178.2
+      },
+      "proven": {
+        "n_repos": 9,
+        "real_bug_caught_count": 9,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 89,
+        "post_fix_mutants_total": 90,
+        "post_fix_mutant_kill_rate_unconditional": 0.9889,
+        "post_fix_mutant_kill_ci95": [
+          0.9667,
+          1.0
+        ],
+        "clean_passing_repos": 9,
+        "post_fix_mutant_kill_rate_conditional": 0.9889,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 0,
+        "total_lines_read": 1068,
+        "mean_lines_read": 118.7
+      }
+    }
+  },
+  "by_language": {
+    "python": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 32,
+        "post_fix_mutants_total": 32,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 555,
+        "mean_lines_read": 138.8
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 32,
+        "post_fix_mutants_total": 32,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 505,
+        "mean_lines_read": 126.2
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 32,
+        "post_fix_mutants_total": 32,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 512,
+        "mean_lines_read": 128.0
+      }
+    },
+    "rust": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 3,
+        "real_bug_catch_rate": 0.75,
+        "real_bug_catch_ci95": [
+          0.25,
+          1.0
+        ],
+        "false_green_count": 1,
+        "false_green_rate": 0.25,
+        "false_green_ci95": [
+          0.0,
+          0.75
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 21,
+        "post_fix_mutants_total": 31,
+        "post_fix_mutant_kill_rate_unconditional": 0.6774,
+        "post_fix_mutant_kill_ci95": [
+          0.1667,
+          1.0
+        ],
+        "clean_passing_repos": 3,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 10,
+        "false_green_buggy_mutants_total": 10,
+        "false_green_buggy_mutant_kill_rate": 1.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 525,
+        "mean_lines_read": 131.2
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 30,
+        "post_fix_mutants_total": 31,
+        "post_fix_mutant_kill_rate_unconditional": 0.9677,
+        "post_fix_mutant_kill_ci95": [
+          0.9167,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9677,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 534,
+        "mean_lines_read": 133.5
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 31,
+        "post_fix_mutants_total": 31,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 340,
+        "mean_lines_read": 85.0
+      }
+    },
+    "go": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 35,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 0.9459,
+        "post_fix_mutant_kill_ci95": [
+          0.8462,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9459,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 599,
+        "mean_lines_read": 149.8
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 34,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 0.9189,
+        "post_fix_mutant_kill_ci95": [
+          0.7692,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9189,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 590,
+        "mean_lines_read": 147.5
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 34,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 0.9189,
+        "post_fix_mutant_kill_ci95": [
+          0.7692,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9189,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 548,
+        "mean_lines_read": 137.0
+      }
+    },
+    "javascript": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 3,
+        "real_bug_catch_rate": 0.75,
+        "real_bug_catch_ci95": [
+          0.25,
+          1.0
+        ],
+        "false_green_count": 1,
+        "false_green_rate": 0.25,
+        "false_green_ci95": [
+          0.0,
+          0.75
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 24,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.6857,
+        "post_fix_mutant_kill_ci95": [
+          0.225,
+          1.0
+        ],
+        "clean_passing_repos": 3,
+        "post_fix_mutant_kill_rate_conditional": 0.96,
+        "false_green_buggy_mutants_killed": 10,
+        "false_green_buggy_mutants_total": 10,
+        "false_green_buggy_mutant_kill_rate": 1.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 447,
+        "mean_lines_read": 111.8
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 34,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.9714,
+        "post_fix_mutant_kill_ci95": [
+          0.925,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9714,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 504,
+        "mean_lines_read": 126.0
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 34,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.9714,
+        "post_fix_mutant_kill_ci95": [
+          0.925,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9714,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 452,
+        "mean_lines_read": 113.0
+      }
+    },
+    "typescript": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 36,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 488,
+        "mean_lines_read": 122.0
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 36,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 479,
+        "mean_lines_read": 119.8
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 35,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 0.9722,
+        "post_fix_mutant_kill_ci95": [
+          0.925,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9722,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 323,
+        "mean_lines_read": 80.8
+      }
+    },
+    "c": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 3,
+        "real_bug_catch_rate": 0.75,
+        "real_bug_catch_ci95": [
+          0.25,
+          1.0
+        ],
+        "false_green_count": 1,
+        "false_green_rate": 0.25,
+        "false_green_ci95": [
+          0.0,
+          0.75
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 23,
+        "post_fix_mutants_total": 29,
+        "post_fix_mutant_kill_rate_unconditional": 0.7931,
+        "post_fix_mutant_kill_ci95": [
+          0.28,
+          1.0
+        ],
+        "clean_passing_repos": 3,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 6,
+        "false_green_buggy_mutants_total": 6,
+        "false_green_buggy_mutant_kill_rate": 1.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 472,
+        "mean_lines_read": 118.0
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 28,
+        "post_fix_mutants_total": 29,
+        "post_fix_mutant_kill_rate_unconditional": 0.9655,
+        "post_fix_mutant_kill_ci95": [
+          0.9167,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9655,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 508,
+        "mean_lines_read": 127.0
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 29,
+        "post_fix_mutants_total": 29,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 314,
+        "mean_lines_read": 78.5
+      }
+    },
+    "cpp": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 37,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 511,
+        "mean_lines_read": 127.8
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 37,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 502,
+        "mean_lines_read": 125.5
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 37,
+        "post_fix_mutants_total": 37,
+        "post_fix_mutant_kill_rate_unconditional": 1.0,
+        "post_fix_mutant_kill_ci95": [
+          1.0,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 1.0,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 334,
+        "mean_lines_read": 83.5
+      }
+    },
+    "java": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 3,
+        "real_bug_catch_rate": 0.75,
+        "real_bug_catch_ci95": [
+          0.25,
+          1.0
+        ],
+        "false_green_count": 1,
+        "false_green_rate": 0.25,
+        "false_green_ci95": [
+          0.0,
+          0.75
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 22,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.6286,
+        "post_fix_mutant_kill_ci95": [
+          0.175,
+          1.0
+        ],
+        "clean_passing_repos": 3,
+        "post_fix_mutant_kill_rate_conditional": 0.88,
+        "false_green_buggy_mutants_killed": 10,
+        "false_green_buggy_mutants_total": 10,
+        "false_green_buggy_mutant_kill_rate": 1.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 466,
+        "mean_lines_read": 116.5
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 32,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.9143,
+        "post_fix_mutant_kill_ci95": [
+          0.775,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9143,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 505,
+        "mean_lines_read": 126.2
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 32,
+        "post_fix_mutants_total": 35,
+        "post_fix_mutant_kill_rate_unconditional": 0.9143,
+        "post_fix_mutant_kill_ci95": [
+          0.775,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9143,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 434,
+        "mean_lines_read": 108.5
+      }
+    },
+    "csharp": {
+      "vanilla": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 33,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 0.9167,
+        "post_fix_mutant_kill_ci95": [
+          0.775,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9167,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 0,
+        "env_drift_total": 1,
+        "total_lines_read": 517,
+        "mean_lines_read": 129.2
+      },
+      "obra": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 34,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 0.9444,
+        "post_fix_mutant_kill_ci95": [
+          0.85,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9444,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 519,
+        "mean_lines_read": 129.8
+      },
+      "proven": {
+        "n_repos": 4,
+        "real_bug_caught_count": 4,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 33,
+        "post_fix_mutants_total": 36,
+        "post_fix_mutant_kill_rate_unconditional": 0.9167,
+        "post_fix_mutant_kill_ci95": [
+          0.775,
+          1.0
+        ],
+        "clean_passing_repos": 4,
+        "post_fix_mutant_kill_rate_conditional": 0.9167,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 1,
+        "env_drift_total": 1,
+        "total_lines_read": 449,
+        "mean_lines_read": 112.2
+      }
+    }
+  },
+  "ablation_explicit_audit_micro36": {
+    "description": "Upper-bound prompt ablation: Explicit 6-category defect-audit rubric + mandatory agent_findings.json on ~50-line single-module micro-repositories with root README spec sheets (108 runs)",
+    "overall": {
+      "vanilla": {
+        "n_repos": 36,
+        "real_bug_caught_count": 36,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 297,
+        "post_fix_mutants_total": 308,
+        "post_fix_mutant_kill_rate_unconditional": 0.9643,
+        "post_fix_mutant_kill_ci95": [
+          0.9299,
+          0.9907
+        ],
+        "clean_passing_repos": 36,
+        "post_fix_mutant_kill_rate_conditional": 0.9643,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 9,
+        "env_drift_total": 9,
+        "mean_lines_read": 49.2
+      },
+      "obra": {
+        "n_repos": 36,
+        "real_bug_caught_count": 35,
+        "real_bug_catch_rate": 0.9722,
+        "real_bug_catch_ci95": [
+          0.9167,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 1,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 284,
+        "post_fix_mutants_total": 308,
+        "post_fix_mutant_kill_rate_unconditional": 0.9221,
+        "post_fix_mutant_kill_ci95": [
+          0.8462,
+          0.977
+        ],
+        "clean_passing_repos": 35,
+        "post_fix_mutant_kill_rate_conditional": 0.953,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 9,
+        "env_drift_total": 9,
+        "mean_lines_read": 45.0
+      },
+      "proven": {
+        "n_repos": 36,
+        "real_bug_caught_count": 36,
+        "real_bug_catch_rate": 1.0,
+        "real_bug_catch_ci95": [
+          1.0,
+          1.0
+        ],
+        "false_green_count": 0,
+        "false_green_rate": 0.0,
+        "false_green_ci95": [
+          0.0,
+          0.0
+        ],
+        "broken_test_count": 0,
+        "source_modified_count": 0,
+        "post_fix_mutants_killed": 294,
+        "post_fix_mutants_total": 308,
+        "post_fix_mutant_kill_rate_unconditional": 0.9545,
+        "post_fix_mutant_kill_ci95": [
+          0.9188,
+          0.9838
+        ],
+        "clean_passing_repos": 36,
+        "post_fix_mutant_kill_rate_conditional": 0.9545,
+        "false_green_buggy_mutants_killed": 0,
+        "false_green_buggy_mutants_total": 0,
+        "false_green_buggy_mutant_kill_rate": 0.0,
+        "env_drift_caught_count": 9,
+        "env_drift_total": 9,
+        "mean_lines_read": 48.5
+      }
+    },
+    "pairwise_statistics": {
+      "proven_vs_vanilla": {
+        "f2p_discordant_a_only": 0,
+        "f2p_discordant_b_only": 0,
+        "f2p_mcnemar_p": 1.0,
+        "false_green_discordant_a_only": 0,
+        "false_green_discordant_b_only": 0,
+        "false_green_mcnemar_p": 1.0,
+        "post_fix_mutant_kill_diff_ci95": [
+          -0.0215,
+          0.0
+        ],
+        "post_fix_mutant_kill_boot_p": 0.0
+      },
+      "proven_vs_obra": {
+        "f2p_discordant_a_only": 1,
+        "f2p_discordant_b_only": 0,
+        "f2p_mcnemar_p": 1.0,
+        "false_green_discordant_a_only": 0,
+        "false_green_discordant_b_only": 0,
+        "false_green_mcnemar_p": 1.0,
+        "post_fix_mutant_kill_diff_ci95": [
+          -0.0066,
+          0.1027
+        ],
+        "post_fix_mutant_kill_boot_p": 0.4656
+      },
+      "obra_vs_vanilla": {
+        "f2p_discordant_a_only": 0,
+        "f2p_discordant_b_only": 1,
+        "f2p_mcnemar_p": 1.0,
+        "false_green_discordant_a_only": 0,
+        "false_green_discordant_b_only": 0,
+        "false_green_mcnemar_p": 1.0,
+        "post_fix_mutant_kill_diff_ci95": [
+          -0.1122,
+          -0.0032
+        ],
+        "post_fix_mutant_kill_boot_p": 0.0
+      }
+    },
+    "by_regime": {
+      "A_ORACLE": {
+        "vanilla": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 84,
+          "post_fix_mutants_total": 84,
+          "post_fix_mutant_kill_rate_unconditional": 1.0,
+          "post_fix_mutant_kill_ci95": [
+            1.0,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 1.0,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 37.8
+        },
+        "obra": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 84,
+          "post_fix_mutants_total": 84,
+          "post_fix_mutant_kill_rate_unconditional": 1.0,
+          "post_fix_mutant_kill_ci95": [
+            1.0,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 1.0,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 34.9
+        },
+        "proven": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 84,
+          "post_fix_mutants_total": 84,
+          "post_fix_mutant_kill_rate_unconditional": 1.0,
+          "post_fix_mutant_kill_ci95": [
+            1.0,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 1.0,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 36.4
+        }
+      },
+      "B_OMISSION": {
+        "vanilla": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 57,
+          "post_fix_mutants_total": 60,
+          "post_fix_mutant_kill_rate_unconditional": 0.95,
+          "post_fix_mutant_kill_ci95": [
+            0.8636,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.95,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 51.3
+        },
+        "obra": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 57,
+          "post_fix_mutants_total": 60,
+          "post_fix_mutant_kill_rate_unconditional": 0.95,
+          "post_fix_mutant_kill_ci95": [
+            0.8636,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.95,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 49.6
+        },
+        "proven": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 57,
+          "post_fix_mutants_total": 60,
+          "post_fix_mutant_kill_rate_unconditional": 0.95,
+          "post_fix_mutant_kill_ci95": [
+            0.8636,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.95,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 50.8
+        }
+      },
+      "C_SLICE_CONCURRENCY_ENV": {
+        "vanilla": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 67,
+          "post_fix_mutants_total": 74,
+          "post_fix_mutant_kill_rate_unconditional": 0.9054,
+          "post_fix_mutant_kill_ci95": [
+            0.8143,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.9054,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 9,
+          "env_drift_total": 9,
+          "mean_lines_read": 52.1
+        },
+        "obra": {
+          "n_repos": 9,
+          "real_bug_caught_count": 8,
+          "real_bug_catch_rate": 0.8889,
+          "real_bug_catch_ci95": [
+            0.6667,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 1,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 56,
+          "post_fix_mutants_total": 74,
+          "post_fix_mutant_kill_rate_unconditional": 0.7568,
+          "post_fix_mutant_kill_ci95": [
+            0.5185,
+            0.9524
+          ],
+          "clean_passing_repos": 8,
+          "post_fix_mutant_kill_rate_conditional": 0.875,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 9,
+          "env_drift_total": 9,
+          "mean_lines_read": 46.0
+        },
+        "proven": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 65,
+          "post_fix_mutants_total": 74,
+          "post_fix_mutant_kill_rate_unconditional": 0.8784,
+          "post_fix_mutant_kill_ci95": [
+            0.7949,
+            0.9697
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.8784,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 9,
+          "env_drift_total": 9,
+          "mean_lines_read": 51.3
+        }
+      },
+      "D_DEEP_COMPOUND": {
+        "vanilla": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 89,
+          "post_fix_mutants_total": 90,
+          "post_fix_mutant_kill_rate_unconditional": 0.9889,
+          "post_fix_mutant_kill_ci95": [
+            0.9667,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.9889,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 55.4
+        },
+        "obra": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 87,
+          "post_fix_mutants_total": 90,
+          "post_fix_mutant_kill_rate_unconditional": 0.9667,
+          "post_fix_mutant_kill_ci95": [
+            0.9333,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.9667,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 49.7
+        },
+        "proven": {
+          "n_repos": 9,
+          "real_bug_caught_count": 9,
+          "real_bug_catch_rate": 1.0,
+          "real_bug_catch_ci95": [
+            1.0,
+            1.0
+          ],
+          "false_green_count": 0,
+          "false_green_rate": 0.0,
+          "false_green_ci95": [
+            0.0,
+            0.0
+          ],
+          "broken_test_count": 0,
+          "source_modified_count": 0,
+          "post_fix_mutants_killed": 88,
+          "post_fix_mutants_total": 90,
+          "post_fix_mutant_kill_rate_unconditional": 0.9778,
+          "post_fix_mutant_kill_ci95": [
+            0.9444,
+            1.0
+          ],
+          "clean_passing_repos": 9,
+          "post_fix_mutant_kill_rate_conditional": 0.9778,
+          "false_green_buggy_mutants_killed": 0,
+          "false_green_buggy_mutants_total": 0,
+          "false_green_buggy_mutant_kill_rate": 0.0,
+          "env_drift_caught_count": 0,
+          "env_drift_total": 0,
+          "mean_lines_read": 55.4
+        }
+      }
+    }
+  },
+  "repositories": [
+    {
+      "id": "01_py_oracle_rebate",
+      "index": 1,
+      "regime": "A_ORACLE",
+      "language": "python",
+      "repo_files": 16,
+      "repo_lines": 725,
+      "target_file": "src/rebate.py",
+      "target_func": "compute_partner_rebate",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 77
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 77
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 47
+        }
+      }
+    },
+    {
+      "id": "02_rs_oracle_sla",
+      "index": 2,
+      "regime": "A_ORACLE",
+      "language": "rust",
+      "repo_files": 17,
+      "repo_lines": 890,
+      "target_file": "src/sla.rs",
+      "target_func": "compute_sla_credit_bps",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": true,
+          "clean_passed": false,
+          "real_bug_caught_f2p": false,
+          "false_green_legalized": true,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 10,
+          "buggy_mutants_total": 10,
+          "clean_mutants_killed": 0,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "FAILED",
+          "env_drift_caught": false,
+          "lines_read": 37
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 76
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 53
+        }
+      }
+    },
+    {
+      "id": "03_go_oracle_ratelimit",
+      "index": 3,
+      "regime": "A_ORACLE",
+      "language": "go",
+      "repo_files": 16,
+      "repo_lines": 1119,
+      "target_file": "limiter/quota.go",
+      "target_func": "ComputeBurstTokens",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 9,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 80
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 62
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 68
+        }
+      }
+    },
+    {
+      "id": "04_js_oracle_shipping",
+      "index": 4,
+      "regime": "A_ORACLE",
+      "language": "javascript",
+      "repo_files": 16,
+      "repo_lines": 736,
+      "target_file": "src/shipping.js",
+      "target_func": "calculateFreightCents",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": true,
+          "clean_passed": false,
+          "real_bug_caught_f2p": false,
+          "false_green_legalized": true,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 10,
+          "buggy_mutants_total": 10,
+          "clean_mutants_killed": 0,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "FAILED",
+          "env_drift_caught": false,
+          "lines_read": 20
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 58
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 65
+        }
+      }
+    },
+    {
+      "id": "05_ts_oracle_jwt_leeway",
+      "index": 5,
+      "regime": "A_ORACLE",
+      "language": "typescript",
+      "repo_files": 16,
+      "repo_lines": 721,
+      "target_file": "src/token.ts",
+      "target_func": "validateClockSkew",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 57
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 57
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 46
+        }
+      }
+    },
+    {
+      "id": "06_c_oracle_crc_frame",
+      "index": 6,
+      "regime": "A_ORACLE",
+      "language": "c",
+      "repo_files": 16,
+      "repo_lines": 724,
+      "target_file": "src/frame.c",
+      "target_func": "validate_packet_length",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 6,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": true,
+          "clean_passed": false,
+          "real_bug_caught_f2p": false,
+          "false_green_legalized": true,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 6,
+          "buggy_mutants_total": 6,
+          "clean_mutants_killed": 0,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "FAILED",
+          "env_drift_caught": false,
+          "lines_read": 21
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 66
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 49
+        }
+      }
+    },
+    {
+      "id": "07_cpp_oracle_margin",
+      "index": 7,
+      "regime": "A_ORACLE",
+      "language": "cpp",
+      "repo_files": 16,
+      "repo_lines": 725,
+      "target_file": "src/margin.cpp",
+      "target_func": "compute_maintenance_margin",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 9,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 60
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 60
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 9,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 49
+        }
+      }
+    },
+    {
+      "id": "08_java_oracle_loyalty",
+      "index": 8,
+      "regime": "A_ORACLE",
+      "language": "java",
+      "repo_files": 15,
+      "repo_lines": 650,
+      "target_file": "src/LoyaltyEngine.java",
+      "target_func": "calculateRedemptionCents",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": true,
+          "clean_passed": false,
+          "real_bug_caught_f2p": false,
+          "false_green_legalized": true,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 10,
+          "buggy_mutants_total": 10,
+          "clean_mutants_killed": 0,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "FAILED",
+          "env_drift_caught": false,
+          "lines_read": 18
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 57
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 64
+        }
+      }
+    },
+    {
+      "id": "09_cs_oracle_payroll",
+      "index": 9,
+      "regime": "A_ORACLE",
+      "language": "csharp",
+      "repo_files": 15,
+      "repo_lines": 665,
+      "target_file": "src/OvertimeCalc.cs",
+      "target_func": "CalculateWeeklyOvertimePay",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 59
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 59
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 67
+        }
+      }
+    },
+    {
+      "id": "10_py_omission_wallet",
+      "index": 10,
+      "regime": "B_OMISSION",
+      "language": "python",
+      "repo_files": 15,
+      "repo_lines": 833,
+      "target_file": "src/wallet.py",
+      "target_func": "issue_instant_refund",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 7,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 225
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        }
+      }
+    },
+    {
+      "id": "11_rs_omission_vault",
+      "index": 11,
+      "regime": "B_OMISSION",
+      "language": "rust",
+      "repo_files": 16,
+      "repo_lines": 1002,
+      "target_file": "src/vault.rs",
+      "target_func": "export_wrapped_key",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 6,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 220
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 188
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 149
+        }
+      }
+    },
+    {
+      "id": "12_go_omission_tenant",
+      "index": 12,
+      "regime": "B_OMISSION",
+      "language": "go",
+      "repo_files": 15,
+      "repo_lines": 1278,
+      "target_file": "tenant/ops.go",
+      "target_func": "PurgeTenantCache",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 227
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 230
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 227
+        }
+      }
+    },
+    {
+      "id": "13_js_omission_coupon",
+      "index": 13,
+      "regime": "B_OMISSION",
+      "language": "javascript",
+      "repo_files": 15,
+      "repo_lines": 848,
+      "target_file": "src/coupons.js",
+      "target_func": "redeemGiftVoucher",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 5,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 178
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 178
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 138
+        }
+      }
+    },
+    {
+      "id": "14_ts_omission_webhook",
+      "index": 14,
+      "regime": "B_OMISSION",
+      "language": "typescript",
+      "repo_files": 15,
+      "repo_lines": 841,
+      "target_file": "src/webhooks.ts",
+      "target_func": "dispatchPayoutWebhook",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 6,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 183
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 183
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 183
+        }
+      }
+    },
+    {
+      "id": "15_c_omission_dma",
+      "index": 15,
+      "regime": "B_OMISSION",
+      "language": "c",
+      "repo_files": 15,
+      "repo_lines": 853,
+      "target_file": "src/dma_buf.c",
+      "target_func": "dma_copy_slice",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 7,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 195
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 195
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 7,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 156
+        }
+      }
+    },
+    {
+      "id": "16_cpp_omission_orderbook",
+      "index": 16,
+      "regime": "B_OMISSION",
+      "language": "cpp",
+      "repo_files": 15,
+      "repo_lines": 845,
+      "target_file": "src/orderbook.cpp",
+      "target_func": "amend_limit_order",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 8,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 187
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 187
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 187
+        }
+      }
+    },
+    {
+      "id": "17_java_omission_prescription",
+      "index": 17,
+      "regime": "B_OMISSION",
+      "language": "java",
+      "repo_files": 14,
+      "repo_lines": 771,
+      "target_file": "src/PharmacyDispense.java",
+      "target_func": "dispenseRefill",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 5,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 185
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 185
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 146
+        }
+      }
+    },
+    {
+      "id": "18_cs_omission_escrow",
+      "index": 18,
+      "regime": "B_OMISSION",
+      "language": "csharp",
+      "repo_files": 14,
+      "repo_lines": 788,
+      "target_file": "src/EscrowService.cs",
+      "target_func": "ReleaseMilestone",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 6,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 151
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 190
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 151
+        }
+      }
+    },
+    {
+      "id": "19_py_slice_sqlite_order",
+      "index": 19,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "python",
+      "repo_files": 17,
+      "repo_lines": 751,
+      "target_file": "src/order_repo.py",
+      "target_func": "insert_settled_order",
+      "expected_missing_env": "ORDER_SIGNING_SECRET",
+      "gt_clean_mutants_total": 5,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 79
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 79
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 116
+        }
+      }
+    },
+    {
+      "id": "20_rs_conc_inventory",
+      "index": 20,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "rust",
+      "repo_files": 17,
+      "repo_lines": 922,
+      "target_file": "src/inventory.rs",
+      "target_func": "reserve_stock",
+      "expected_missing_env": "INVENTORY_AUDIT_SALT",
+      "gt_clean_mutants_total": 5,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 92
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 94
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 5,
+          "clean_mutants_total": 5,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 94
+        }
+      }
+    },
+    {
+      "id": "21_go_conc_wallet",
+      "index": 21,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "go",
+      "repo_files": 16,
+      "repo_lines": 1159,
+      "target_file": "wallet/ledger.go",
+      "target_func": "TryDebitBalance",
+      "expected_missing_env": "WALLET_AUDIT_TOPIC",
+      "gt_clean_mutants_total": 8,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 94
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 97
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 8,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 55
+        }
+      }
+    },
+    {
+      "id": "22_js_slice_json_ledger",
+      "index": 22,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "javascript",
+      "repo_files": 17,
+      "repo_lines": 761,
+      "target_file": "src/ledger_store.js",
+      "target_func": "applySettlementJson",
+      "expected_missing_env": "LEDGER_HMAC_SECRET",
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 76
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 95
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": true,
+          "lines_read": 77
+        }
+      }
+    },
+    {
+      "id": "23_ts_slice_invoice_serde",
+      "index": 23,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "typescript",
+      "repo_files": 17,
+      "repo_lines": 745,
+      "target_file": "src/invoice_repo.ts",
+      "target_func": "deserializeInvoiceTotal",
+      "expected_missing_env": "INVOICE_KMS_KEY_ID",
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 73
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 64
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 54
+        }
+      }
+    },
+    {
+      "id": "24_c_slice_packet_codec",
+      "index": 24,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "c",
+      "repo_files": 17,
+      "repo_lines": 756,
+      "target_file": "src/codec.c",
+      "target_func": "decode_frame_payload_len",
+      "expected_missing_env": "TRANSPORT_PSK_HEX",
+      "gt_clean_mutants_total": 6,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 84
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 75
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 6,
+          "clean_mutants_total": 6,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 66
+        }
+      }
+    },
+    {
+      "id": "25_cpp_slice_kv_wal",
+      "index": 25,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "cpp",
+      "repo_files": 17,
+      "repo_lines": 757,
+      "target_file": "src/wal_reader.cpp",
+      "target_func": "parse_wal_record_seq",
+      "expected_missing_env": "KV_WAL_SYNC_MODE",
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 85
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 76
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": true,
+          "lines_read": 55
+        }
+      }
+    },
+    {
+      "id": "26_java_conc_seatmap",
+      "index": 26,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "java",
+      "repo_files": 15,
+      "repo_lines": 688,
+      "target_file": "src/SeatInventory.java",
+      "target_func": "tryAllocateSeats",
+      "expected_missing_env": "BOOKING_CLUSTER_REGION",
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 88
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 88
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 49
+        }
+      }
+    },
+    {
+      "id": "27_cs_conc_quota",
+      "index": 27,
+      "regime": "C_SLICE_CONCURRENCY_ENV",
+      "language": "csharp",
+      "repo_files": 15,
+      "repo_lines": 703,
+      "target_file": "src/QuotaBucket.cs",
+      "target_func": "TryConsumeQuota",
+      "expected_missing_env": "QUOTA_REDIS_PREFIX",
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 128
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 8,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": true,
+          "lines_read": 91
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 7,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": true,
+          "lines_read": 52
+        }
+      }
+    },
+    {
+      "id": "28_py_deep_access_matrix",
+      "index": 28,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "python",
+      "repo_files": 15,
+      "repo_lines": 832,
+      "target_file": "src/access_matrix.py",
+      "target_func": "evaluate_access_policy",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 174
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 174
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 174
+        }
+      }
+    },
+    {
+      "id": "29_rs_deep_packet_flags",
+      "index": 29,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "rust",
+      "repo_files": 16,
+      "repo_lines": 990,
+      "target_file": "src/packet_flags.rs",
+      "target_func": "encode_control_word",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 176
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 176
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 44
+        }
+      }
+    },
+    {
+      "id": "30_go_deep_retry_backoff",
+      "index": 30,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "go",
+      "repo_files": 15,
+      "repo_lines": 1249,
+      "target_file": "backoff/policy.go",
+      "target_func": "ComputeRetryDelayMs",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 198
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 201
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 198
+        }
+      }
+    },
+    {
+      "id": "31_js_deep_risk_scorer",
+      "index": 31,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "javascript",
+      "repo_files": 15,
+      "repo_lines": 843,
+      "target_file": "src/risk_scorer.js",
+      "target_func": "computeTransactionRisk",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 173
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 173
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 172
+        }
+      }
+    },
+    {
+      "id": "32_ts_deep_semver_gate",
+      "index": 32,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "typescript",
+      "repo_files": 15,
+      "repo_lines": 833,
+      "target_file": "src/semver_gate.ts",
+      "target_func": "classifyUpgradeImpact",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 40
+        }
+      }
+    },
+    {
+      "id": "33_c_deep_bitstream",
+      "index": 33,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "c",
+      "repo_files": 15,
+      "repo_lines": 830,
+      "target_file": "src/bitstream.c",
+      "target_func": "pack_sensor_sample",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 172
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 9,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "SILVER",
+          "env_drift_caught": false,
+          "lines_read": 172
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 43
+        }
+      }
+    },
+    {
+      "id": "34_cpp_deep_fee_schedule",
+      "index": 34,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "cpp",
+      "repo_files": 15,
+      "repo_lines": 837,
+      "target_file": "src/fee_schedule.cpp",
+      "target_func": "compute_clearing_fee_cents",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 179
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 179
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 43
+        }
+      }
+    },
+    {
+      "id": "35_java_deep_audit_mask",
+      "index": 35,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "java",
+      "repo_files": 14,
+      "repo_lines": 761,
+      "target_file": "src/AuditMask.java",
+      "target_func": "computeEffectivePermissions",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 175
+        }
+      }
+    },
+    {
+      "id": "36_cs_deep_invoice_state",
+      "index": 36,
+      "regime": "D_DEEP_COMPOUND",
+      "language": "csharp",
+      "repo_files": 14,
+      "repo_lines": 777,
+      "target_file": "src/InvoiceWorkflow.cs",
+      "target_func": "TransitionInvoice",
+      "expected_missing_env": null,
+      "gt_clean_mutants_total": 10,
+      "arms": {
+        "vanilla": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 179
+        },
+        "obra": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 179
+        },
+        "proven": {
+          "test_exists": true,
+          "source_modified": false,
+          "buggy_passed": false,
+          "clean_passed": true,
+          "real_bug_caught_f2p": true,
+          "false_green_legalized": false,
+          "broken_or_missing_test": false,
+          "buggy_mutants_killed": 0,
+          "buggy_mutants_total": 0,
+          "clean_mutants_killed": 10,
+          "clean_mutants_total": 10,
+          "clean_proof_grade": "TITANIUM",
+          "env_drift_caught": false,
+          "lines_read": 179
+        }
+      }
+    }
+  ]
+}

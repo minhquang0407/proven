@@ -1,0 +1,45 @@
+name: "Proven Test Advisor"
+description: "Scans Pull Request changes for untested functions using Proven's AST call graph and mutation verification."
+author: "LTCD"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  base-branch:
+    description: "The base branch or SHA to diff against (e.g., main)."
+    required: false
+    default: "main"
+  head-branch:
+    description: "The head branch or SHA to diff against (e.g., HEAD)."
+    required: false
+    default: "HEAD"
+  fan-out:
+    description: "Generate subagent fan-out tasks in scan output."
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build Proven Binary
+      shell: bash
+      run: |
+        cargo build --release --manifest-path "${{ github.action_path }}/Cargo.toml"
+
+    - name: Run Proven PR Impact Scan
+      shell: bash
+      run: |
+        FAN_OUT_FLAG=""
+        if [ "${{ inputs.fan-out }}" = "true" ]; then
+          FAN_OUT_FLAG="--fan-out"
+        fi
+        "${{ github.action_path }}/target/release/proven" scan \
+          --path . \
+          --base "${{ inputs.base-branch }}" \
+          --head "${{ inputs.head-branch }}" \
+          $FAN_OUT_FLAG \
+          --json

@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "skills": [
+    {
+      "name": "proven",
+      "version": "1.0.0",
+      "description": "Stop coding agents from writing passing tests around broken code \u2014 spec-first AST context, call-graph analysis, and mutation testing CLI",
+      "path": "skills/proven",
+      "entry": "SKILL.md",
+      "scripts_dir": "skills/proven/scripts",
+      "bin_dir": "skills/proven/bin",
+      "targets": [
+        "claude-code",
+        "openclaw",
+        "cursor",
+        "codex",
+        "windsurf"
+      ],
+      "install_command": "python skills/proven/scripts/install_skill.py --target all"
+    }
+  ]
+}
