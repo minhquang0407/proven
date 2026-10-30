@@ -44,17 +44,6 @@ tags:
 
 ## Two-Phase Verification Workflow
 
-```mermaid
-flowchart LR
-    Scan["1. SCAN<br/>Untested changes & config_audit"] --> Blind["2. BLIND CONTEXT<br/>Specs, sibling guards & invariants"]
-    Blind --> Turn1["3. TURN-1 TESTS<br/>Spec & omission probes"]
-    Turn1 --> FullCtx["4. FULL CONTEXT<br/>AST, slice, concurrency & literals"]
-    FullCtx --> MutProof{"5. SLICE / MUTATION<br/>verify-proof --mutation-check"}
-    MutProof -->|"Survived (SILVER)"| Repair["6. REPAIR / REPORT<br/>Kill mutants or flag [ORACLE_REVIEW]"]
-    Repair --> MutProof
-    MutProof -->|"0 Survived (TITANIUM)"| Audit["7. CONSOLIDATE<br/>Persist rules & report"]
-```
-
 ### Stage 1: SCAN — Find Untested Changes & Config Drift
 ```bash
 python <skill_dir>/scripts/scan_impact.py --path . --fan-out --json
